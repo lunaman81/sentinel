@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheel Dashboard — Sentinel v1</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+:root{--bg:#f8f9fb;--s:#ffffff;--s2:#f1f3f5;--bd:#e2e5ea;--t:#1a1d23;--t2:#6b7280;--g:#16a34a;--r:#dc2626;--y:#ca8a04;--bl:#2563eb;--cy:#0891b2;--or:#ea580c;--ac:#4f46e5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'SF Mono','Fira Code',Consolas,monospace;background:var(--bg);color:var(--t);font-size:13px}
+.app{max-width:1400px;margin:0 auto;padding:16px}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--bd);margin-bottom:16px}
+.hdr h1{font-size:18px;font-weight:700;letter-spacing:-.5px}
+.hdr h1 b{color:var(--ac)}
+.ubtn{background:var(--ac);color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600}
+.ubtn:hover{opacity:.9}
+input[type="file"]{display:none}
+.banner{border-radius:6px;padding:10px 16px;margin-bottom:10px;font-size:12px}
+.b-warn{background:#fefce8;border:1px solid var(--y);color:#854d0e}
+.b-freeze{background:#fef2f2;border:1px solid var(--r);color:#991b1b}
+.b-deploy{background:#fff7ed;border:1px solid var(--or);color:#9a3412}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin-bottom:14px}
+.mc{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+.mc-l{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--t2);margin-bottom:2px}
+.mc-v{font-size:17px;font-weight:700}
+.grn{color:var(--g)}.red{color:var(--r)}
+.tabs{display:flex;gap:2px;margin-bottom:14px;background:var(--s);border-radius:8px;padding:3px;border:1px solid var(--bd)}
+.tab{padding:7px 14px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px;border:none;background:0;color:var(--t2);font-weight:500}
+.tab.on{background:var(--ac);color:#fff}
+.tw{overflow-x:auto;margin-bottom:14px}
+table{width:100%;border-collapse:collapse;background:var(--s);border-radius:8px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+th{background:var(--s2);padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--t2);font-weight:600;white-space:nowrap}
+td{padding:7px 10px;border-top:1px solid var(--bd);white-space:nowrap;font-size:12px}
+tr:hover td{background:var(--s2)}
+.r{text-align:right}
+.b{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.bg{background:#dcfce7;color:var(--g)}.br{background:#fef2f2;color:var(--r)}.by{background:#fefce8;color:#854d0e}
+.bb{background:#eff6ff;color:var(--bl)}.bo{background:#fff7ed;color:var(--or)}
+.bf{background:#fef2f2;color:var(--r);border:1px solid var(--r)}
+.sec{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--t2)}
+.calc{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:16px;margin-bottom:14px}
+.calc h3{font-size:13px;margin-bottom:10px;color:var(--cy)}
+.cr{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.cf{display:flex;flex-direction:column;gap:4px}
+.cf label{font-size:10px;text-transform:uppercase;color:var(--t2)}
+.cf input{background:var(--s2);border:1px solid var(--bd);border-radius:4px;padding:6px 10px;color:var(--t);font-family:inherit;font-size:13px;width:120px}
+.cres{padding:8px 14px;border-radius:6px;font-weight:700;font-size:14px}
+.cyes{background:#dcfce7;color:var(--g);border:1px solid var(--g)}
+.cno{background:#fef2f2;color:var(--r);border:1px solid var(--r)}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;margin-bottom:14px}
+.pc{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:12px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,0.04)}
+.pc .v{font-size:20px;font-weight:700;margin:3px 0}
+.pc .l{font-size:10px;text-transform:uppercase;color:var(--t2);letter-spacing:1px}
+.chart-box{background:var(--s);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:14px}
+.bars{display:flex;align-items:end;gap:3px;height:160px;padding-top:20px;position:relative}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+.bar-fill{width:100%;min-width:8px;max-width:40px;border-radius:3px 3px 0 0;transition:height .3s;position:relative}
+.bar-fill:hover::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--t);white-space:nowrap;background:var(--s);padding:2px 6px;border-radius:3px;border:1px solid var(--bd)}
+.bar-lbl{font-size:9px;color:var(--t2);margin-top:4px;writing-mode:vertical-lr;transform:rotate(180deg);max-height:50px;overflow:hidden}
+.cum-line{position:absolute;top:0;left:0;width:100%;height:160px;pointer-events:none}
+.mt td,.mt th{padding:5px 8px;font-size:11px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const{useState,useMemo,useRef,useCallback}=React;
+
+const SEN={mxExp:12,wnExp:10,mxDep:85,frzPct:-3,profTgt:80,zdTgt:90,minCush:5};
+const BL=['MSTR','RIOT','DDOG','ABNB','META','SHOP','COIN','AMZN','OPEN','AMD'];
+
+function parseCSV(text){
+  const lines=text.replace(/^\uFEFF/,'').split('\n').filter(l=>l.trim());
+  const S={};
+  for(const line of lines){
+    const f=[];let c='',q=false;
+    for(const ch of line){if(ch==='"'){q=!q;continue}if(ch===','&&!q){f.push(c.trim());c='';continue}c+=ch}
+    f.push(c.trim());
+    const s=f[0],tp=f[1];
+    if(!S[s])S[s]={h:[],d:[],t:[]};
+    if(tp==='Header')S[s].h.push(f.slice(2));
+    else if(tp==='Data')S[s].d.push(f.slice(2));
+    else if(tp==='Total'||tp==='SubTotal')S[s].t.push(f.slice(2));
+  }
+  return S;
+}
+
+function extract(S){
+  const p=v=>parseFloat(v)||0;
+  const nr=(S['Net Asset Value']||{}).d||[];
+  const nt=nr.find(r=>r[0]==='Total');
+  const cr=nr.find(r=>r[0]?.trim()==='Cash');
+  const nav=nt?p(nt[4]):0, cash=cr?p(cr[4]):0, pNav=nt?p(nt[1]):0;
+  const tr=nr.find(r=>/^\d/.test(r[0])); const twr=tr?p(tr[0]):0;
+  const ch=(S['Change in NAV']||{}).d||[];
+  const gc=l=>{const r=ch.find(x=>x[0]===l);return r?p(r[1]):0};
+  const rPL=gc('Realized P/L'),uCh=gc('Change in Unrealized P/L'),dep=gc('Deposits & Withdrawals');
+  const st=(S['Statement']||{}).d||[];
+  const period=(st.find(r=>r[0]==='Period')||[])[1]||'';
+  const gen=(st.find(r=>r[0]==='WhenGenerated')||[])[1]||'';
+  const pd=(S['Open Positions']||{}).d||[];
+  const stocks=[],options=[];
+  for(const r of pd){
+    if(r[0]!=='Summary')continue;
+    const o={cat:r[1],sym:r[3],qty:p(r[4]),mult:p(r[5]),cp:p(r[6]),cb:p(r[7]),clp:p(r[8]),val:p(r[9]),upl:p(r[10])};
+    if(r[1]==='Stocks')stocks.push(o);else if(r[1]==='Equity and Index Options')options.push(o);
+  }
+  const td=(S['Trades']||{}).d||[];
+  const trades=td.filter(r=>r[0]==='Order').map(r=>({cat:r[1],sym:r[3],dt:r[4],qty:p(r[5]),px:p(r[6]),proc:p(r[7]),comm:p(r[8]),bas:p(r[9]),rpl:p(r[10]),code:r[11]||''}));
+  const pf=(S['Realized & Unrealized Performance Summary']||{}).d||[];
+  const oPerf=pf.filter(r=>r[0]==='Equity and Index Options').map(r=>({sym:r[1],rTot:p(r[7]),uTot:p(r[12])}));
+  const dd=(S['Deposits & Withdrawals']||{}).d||[];
+  const deps=dd.filter(r=>r[0]!=='Total').map(r=>({cur:r[0],date:r[1],desc:r[2],amt:p(r[3])}));
+  return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,stocks,options,trades,oPerf,deps};
+}
+
+function pOpt(sym){
+  const m=sym.match(/^(\w+)\s+(\d{2})([A-Z]{3})(\d{2})\s+([\d.]+)\s+([PC])$/);
+  if(!m)return null;
+  const mo={JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
+  return{tk:m[1],d:+m[2],mo:mo[m[3]],yr:2000+ +m[4],st:parseFloat(m[5]),tp:m[6],
+    exp:new Date(2000+ +m[4],mo[m[3]],+m[2])};
+}
+function dte(sym){const o=pOpt(sym);if(!o)return null;const n=new Date();n.setHours(0,0,0,0);return Math.max(0,Math.ceil((o.exp-n)/864e5))}
+
+function App(){
+  const[data,setData]=useState(null);
+  const[tab,setTab]=useState('positions');
+  const[cs,setCs]=useState({ctc:'',nc:''});
+  const fr=useRef();
+
+  const onUp=useCallback(e=>{
+    const f=e.target.files[0];if(!f)return;
+    if(!f.name.endsWith('.csv')){alert('Error: Upload an IBKR Activity Statement CSV (.csv)');return}
+    const rd=new FileReader();
+    rd.onload=ev=>{
+      try{
+        const S=parseCSV(ev.target.result);
+        if(!S['Open Positions']&&!S['Net Asset Value']){alert('Error: Not an IBKR Activity Statement.');return}
+        setData(extract(S));
+      }catch(err){alert('Parse error: '+err.message)}
+    };rd.readAsText(f);
+  },[]);
+
+  const C=useMemo(()=>{
+    if(!data)return null;
+    const{nav,stocks,options,oPerf}=data;
+
+    const eq=stocks.map(s=>{
+      const ccCr=oPerf.filter(o=>{const p=pOpt(o.sym);return p&&p.tk===s.sym&&p.tp==='C'}).reduce((a,o)=>a+o.rTot,0);
+      const openCC=options.filter(o=>{const p=pOpt(o.sym);return p&&p.tk===s.sym&&p.tp==='C'}).reduce((a,o)=>a+Math.abs(o.cb),0);
+      const totCC=ccCr+openCC;
+      const wc=s.cp-(totCC/Math.abs(s.qty||1));
+      const wb=wc*Math.abs(s.qty);const wpl=s.val-wb;
+      const exp=nav>0?(Math.abs(s.val)/nav*100):0;
+      const plN=nav>0?(s.upl/nav*100):0;
+      const frz=plN<=SEN.frzPct;
+      return{...s,totCC,wc,wb,wpl,exp,plN,frz};
+    });
+
+    const opts=options.map(o=>{
+      const ps=pOpt(o.sym);const d=dte(o.sym);
+      const pp=o.cb!==0?(o.upl/Math.abs(o.cb)*100):0;
+      const tk=ps?.tk||o.sym.split(' ')[0];const st=ps?.st||0;const tp=ps?.tp||'?';
+      const not=st*Math.abs(o.qty)*(o.mult||100);
+      const ep=nav>0?(not/nav*100):0;
+      const und=stocks.find(s=>s.sym===tk);const up=und?und.clp:0;
+      const cush=(tp==='P'&&up>0)?((up-st)/up*100):null;
+      let dec='';
+      if(d===0&&pp>=90)dec='🟢 CLOSE';else if(d===0)dec='⏳ 0DTE';
+      else if(d===1&&pp>=85)dec='🟢 CLOSE';else if(pp>=80)dec='🟢 CLOSE';else if(pp>=75)dec='🟡 NEAR';
+      let ef='';if(ep>=SEN.mxExp)ef='MAX';else if(ep>=SEN.wnExp)ef='AT ALLOC';
+      return{...o,ps,dte:d,pp,tk,st,tp,not,ep,cush,dec,ef};
+    });
+
+    const sv=stocks.reduce((a,p)=>a+Math.abs(p.val),0);
+    const pn=opts.filter(o=>o.tp==='P').reduce((a,o)=>a+o.not,0);
+    const dpct=nav>0?((sv+pn)/nav*100):0;
+    const frz=eq.filter(e=>e.frz).map(e=>e.sym);
+    const col=pn;
+
+    const cl=oPerf.filter(o=>o.rTot!==0);
+    const w=cl.filter(o=>o.rTot>0),lo=cl.filter(o=>o.rTot<0);
+    const tw=w.reduce((a,o)=>a+o.rTot,0),tl=Math.abs(lo.reduce((a,o)=>a+o.rTot,0));
+    const wr=cl.length>0?(w.length/cl.length*100):0;
+    const pf=tl>0?tw/tl:tw>0?Infinity:0;
+    const aw=w.length>0?tw/w.length:0,al=lo.length>0?tl/lo.length:0;
+    const ex=cl.length>0?(tw-tl)/cl.length:0;
+    const net=tw-tl;
+
+    const pp=cl.filter(o=>{const x=pOpt(o.sym);return x?.tp==='P'});
+    const cp=cl.filter(o=>{const x=pOpt(o.sym);return x?.tp==='C'});
+    const pw=pp.filter(o=>o.rTot>0).length,cw=cp.filter(o=>o.rTot>0).length;
+    const pt=pp.reduce((a,o)=>a+o.rTot,0),ct=cp.reduce((a,o)=>a+o.rTot,0);
+
+    const hnc=eq.filter(e=>e.totCC===0&&Math.abs(e.val)>100);
+
+    // Weekly P&L by option expiry
+    const wk={};
+    for(const o of cl){const ps=pOpt(o.sym);if(ps){const e=ps.exp;const ws=new Date(e);ws.setDate(e.getDate()-e.getDay());const k=ws.toISOString().slice(0,10);wk[k]=(wk[k]||0)+o.rTot}}
+    const weeks=Object.keys(wk).sort();let cum=0;
+    const wChart=weeks.map(w=>{const pl=wk[w]||0;cum+=pl;return{w:w.slice(5),pl:Math.round(pl),cum:Math.round(cum)}});
+
+    // Monthly
+    const mPL={};
+    for(const o of cl){const ps=pOpt(o.sym);if(ps){const k=`${ps.yr}-${String(ps.mo+1).padStart(2,'0')}`;if(!mPL[k])mPL[k]={p:0,c:0,t:0,n:0,w:0};mPL[k].t+=o.rTot;mPL[k].n++;if(o.rTot>0)mPL[k].w++;if(ps.tp==='P')mPL[k].p+=o.rTot;else mPL[k].c+=o.rTot}}
+
+    return{eq,opts,dpct,frz,col,wr,pf,aw,al,ex,net,pw,pt,pp,cw,ct,cp,cl,hnc,wChart,mPL};
+  },[data]);
+
+  const rr=useMemo(()=>{
+    const a=parseFloat(cs.ctc)||0,b=parseFloat(cs.nc)||0;
+    if(a===0&&b===0)return null;const n=b-a;return{n,ok:n>0};
+  },[cs]);
+
+  const fm=(n,d=0)=>n?.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d})??'—';
+  const fd=(n,d=0)=>n>=0?`$${fm(n,d)}`:`-$${fm(Math.abs(n),d)}`;
+  const fp=(n,d=1)=>`${n?.toFixed(d)}%`;
+  const cv=n=>n>=0?'grn':'red';
+
+  // Simple bar chart component
+  const BarChart=({data,barKey,labelKey})=>{
+    if(!data.length)return null;
+    const mx=Math.max(...data.map(d=>Math.abs(d[barKey])),1);
+    return(
+      <div className="bars">
+        {data.map((d,i)=>{
+          const h=Math.abs(d[barKey])/mx*140;
+          const clr=d[barKey]>=0?'var(--ac)':'var(--r)';
+          return(<div className="bar-col" key={i}>
+            <div className="bar-fill" style={{height:h+'px',background:clr}} data-val={`$${(d[barKey]/1000).toFixed(1)}K`}/>
+            <div className="bar-lbl">{d[labelKey]}</div>
+          </div>);
+        })}
+      </div>
+    );
+  };
+
+  const c=C;
+  return(
+    <div className="app">
+      <div className="hdr"><h1>🛡️ <b>Sentinel</b> Wheel Dashboard</h1>
+        <label className="ubtn">Upload IBKR CSV<input type="file" accept=".csv" onChange={onUp} ref={fr}/></label></div>
+
+      {data&&<div className="banner b-warn">⚠️ Snapshot: {data.period} — Generated {data.gen} — Verify live in IBKR before trading</div>}
+      {data&&c.frz.length>0&&<div className="banner b-freeze">🧊 FROZEN: {c.frz.join(', ')} — P&L below {SEN.frzPct}% NAV. No new positions.</div>}
+      {data&&c.dpct>=SEN.mxDep&&<div className="banner b-deploy">🚨 DEPLOYMENT {fp(c.dpct)} — exceeds {SEN.mxDep}% cap.</div>}
+
+      {data&&<div className="mg">
+        <div className="mc"><div className="mc-l">NAV</div><div className="mc-v">{fd(data.nav)}</div></div>
+        <div className="mc"><div className="mc-l">Cash</div><div className="mc-v">{fd(data.cash)}</div></div>
+        <div className="mc"><div className="mc-l">Collateral</div><div className="mc-v">{fd(c.col)}</div></div>
+        <div className="mc"><div className="mc-l">Realized P&L</div><div className={`mc-v ${cv(data.rPL)}`}>{fd(data.rPL)}</div></div>
+        <div className="mc"><div className="mc-l">Unrealized Chg</div><div className={`mc-v ${cv(data.uCh)}`}>{fd(data.uCh)}</div></div>
+        <div className="mc"><div className="mc-l">TWR</div><div className={`mc-v ${cv(data.twr)}`}>{fp(data.twr,2)}</div></div>
+        <div className="mc"><div className="mc-l">Deployment</div><div className={`mc-v ${c.dpct>=SEN.mxDep?'red':''}`}>{fp(c.dpct)}</div></div>
+      </div>}
+
+      <div className="tabs">
+        {['positions','performance','calculator'].map(t=>
+          <div key={t} className={`tab ${tab===t?'on':''}`} onClick={()=>setTab(t)}>{t==='calculator'?'Rolling Calc':t.charAt(0).toUpperCase()+t.slice(1)}</div>
+        )}
+      </div>
+
+      {!data&&tab!=='calculator'&&<div className="banner b-warn">Upload an IBKR Activity Statement CSV to load positions.</div>}
+
+      {data&&tab==='positions'&&<>
+        {c.eq.length>0&&<><div className="sec">EQUITY POSITIONS (Wheel-Adjusted Cost)</div>
+        <div className="tw"><table><thead><tr>
+          <th>Symbol</th><th className="r">Qty</th><th className="r">IBKR Cost</th><th className="r">CC Credits</th>
+          <th className="r">Wheel Cost</th><th className="r">Price</th><th className="r">Value</th>
+          <th className="r">Wheel P&L</th><th className="r">Exposure</th><th>Status</th>
+        </tr></thead><tbody>
+          {c.eq.map(e=><tr key={e.sym}>
+            <td><strong>{e.sym}</strong> {BL.includes(e.sym)&&<span className="b br">T3</span>}</td>
+            <td className="r">{fm(e.qty)}</td><td className="r">{fd(e.cp,2)}</td>
+            <td className="r" style={{color:'var(--g)'}}>{fd(e.totCC)}</td>
+            <td className="r">{fd(e.wc,2)}</td><td className="r">{fd(e.clp,2)}</td>
+            <td className="r">{fd(e.val)}</td>
+            <td className="r" style={{color:e.wpl>=0?'var(--g)':'var(--r)'}}>{fd(e.wpl)}</td>
+            <td className="r">{fp(e.exp)}</td>
+            <td>{e.frz?<span className="b bf">🧊 FROZEN</span>:e.clp<e.wc?<span className="b by">NO CC</span>:<span className="b bg">CC OK</span>}</td>
+          </tr>)}
+        </tbody></table></div></>}
+
+        {c.opts.length>0&&<><div className="sec">OPTIONS POSITIONS</div>
+        <div className="tw"><table><thead><tr>
+          <th>Symbol</th><th>Type</th><th className="r">Qty</th><th className="r">Strike</th><th className="r">Expiry</th>
+          <th className="r">Cost</th><th className="r">Price</th><th className="r">Profit %</th>
+          <th className="r">Cushion</th><th className="r">Exposure</th><th className="r">DTE</th><th>Decision</th>
+        </tr></thead><tbody>
+          {c.opts.map(o=><tr key={o.sym}>
+            <td><strong>{o.tk}</strong></td>
+            <td><span className={`b ${o.tp==='P'?'bo':'bb'}`}>{o.tp==='P'?'PUT':'CALL'}</span></td>
+            <td className="r">{Math.abs(o.qty)}</td><td className="r">{fd(o.st)}</td>
+            <td className="r">{o.ps?`${o.ps.mo+1}/${o.ps.d}/${o.ps.yr%100}`:'—'}</td>
+            <td className="r">{fd(o.cp,2)}</td><td className="r">{fd(o.clp,2)}</td>
+            <td className="r" style={{color:o.pp>=0?'var(--g)':'var(--r)'}}>{fp(o.pp)}</td>
+            <td className="r">{o.cush!==null?fp(o.cush):'—'}</td>
+            <td className="r">{fp(o.ep)}{o.ef==='MAX'&&<span className="b br" style={{marginLeft:3}}>MAX</span>}{o.ef==='AT ALLOC'&&<span className="b by" style={{marginLeft:3}}>AT ALLOC</span>}</td>
+            <td className="r">{o.dte??'—'}</td><td>{o.dec||'—'}</td>
+          </tr>)}
+        </tbody></table></div></>}
+      </>}
+
+      {data&&tab==='performance'&&<>
+        <div className="pg">
+          <div className="pc"><div className="l">Win Rate</div><div className="v grn">{fp(c.wr)}</div><div className="l">{c.cl.length} trades</div></div>
+          <div className="pc"><div className="l">Profit Factor</div><div className="v" style={{color:'var(--cy)'}}>{c.pf===Infinity?'∞':c.pf.toFixed(1)}x</div></div>
+          <div className="pc"><div className="l">Expectancy</div><div className="v grn">{fd(c.ex)}</div><div className="l">per trade</div></div>
+          <div className="pc"><div className="l">Net Options P&L</div><div className={`v ${cv(c.net)}`}>{fd(c.net)}</div></div>
+          <div className="pc"><div className="l">Avg Win</div><div className="v grn">{fd(c.aw)}</div></div>
+          <div className="pc"><div className="l">Avg Loss</div><div className="v red">{fd(c.al)}</div></div>
+        </div>
+
+        <div className="sec">STRATEGY BREAKDOWN</div>
+        <div className="tw"><table><thead><tr><th>Strategy</th><th className="r">Trades</th><th className="r">Wins</th><th className="r">Win Rate</th><th className="r">Net P&L</th></tr></thead><tbody>
+          <tr><td><span className="b bo">PUTS</span></td><td className="r">{c.pp.length}</td><td className="r">{c.pw}</td><td className="r">{c.pp.length>0?fp(c.pw/c.pp.length*100):'—'}</td><td className="r" style={{color:c.pt>=0?'var(--g)':'var(--r)'}}>{fd(c.pt)}</td></tr>
+          <tr><td><span className="b bb">CALLS</span></td><td className="r">{c.cp.length}</td><td className="r">{c.cw}</td><td className="r">{c.cp.length>0?fp(c.cw/c.cp.length*100):'—'}</td><td className="r" style={{color:c.ct>=0?'var(--g)':'var(--r)'}}>{fd(c.ct)}</td></tr>
+        </tbody></table></div>
+
+        {c.wChart.length>0&&<div className="chart-box">
+          <div className="sec">WEEKLY P&L BY EXPIRY</div>
+          <BarChart data={c.wChart} barKey="pl" labelKey="w"/>
+        </div>}
+
+        {Object.keys(c.mPL).length>0&&<><div className="sec">MONTHLY SUMMARY</div>
+        <div className="tw"><table className="mt"><thead><tr><th>Month</th><th className="r">Trades</th><th className="r">Win Rate</th><th className="r">Puts</th><th className="r">Calls</th><th className="r">Total</th></tr></thead><tbody>
+          {Object.entries(c.mPL).sort().map(([m,d])=><tr key={m}><td>{m}</td><td className="r">{d.n}</td><td className="r">{fp(d.w/d.n*100)}</td>
+            <td className="r" style={{color:d.p>=0?'var(--g)':'var(--r)'}}>{fd(d.p)}</td>
+            <td className="r" style={{color:d.c>=0?'var(--g)':'var(--r)'}}>{fd(d.c)}</td>
+            <td className="r" style={{color:d.t>=0?'var(--g)':'var(--r)'}}>{fd(d.t)}</td></tr>)}
+        </tbody></table></div></>}
+
+        {c.hnc.length>0&&<><div className="sec">⚠️ HOLDING WITHOUT COVERED CALLS</div>
+        <div className="tw"><table><thead><tr><th>Symbol</th><th className="r">Value</th><th className="r">Unrealized P&L</th><th>Reason</th></tr></thead><tbody>
+          {c.hnc.map(e=><tr key={e.sym}><td><strong>{e.sym}</strong></td><td className="r">{fd(e.val)}</td>
+            <td className="r" style={{color:e.upl>=0?'var(--g)':'var(--r)'}}>{fd(e.upl)}</td>
+            <td>{e.clp<e.wc?'Price below breakeven':'No calls sold'}</td></tr>)}
+        </tbody></table></div></>}
+
+        {data.deps.length>0&&<><div className="sec">DEPOSITS & WITHDRAWALS</div>
+        <div className="tw"><table className="mt"><thead><tr><th>Date</th><th>Description</th><th className="r">Amount</th></tr></thead><tbody>
+          {data.deps.map((d,i)=><tr key={i}><td>{d.date}</td><td>{d.desc}</td><td className="r" style={{color:d.amt>=0?'var(--g)':'var(--r)'}}>{fd(d.amt)}</td></tr>)}
+        </tbody></table></div></>}
+      </>}
+
+      {tab==='calculator'&&<div className="calc">
+        <h3>🔄 Rolling Calculator</h3>
+        <p style={{color:'var(--t2)',fontSize:12,marginBottom:14}}>Enter cost to close current position and credit from new position. Roll only if net credit is positive.</p>
+        <div className="cr">
+          <div className="cf"><label>Cost to Close (debit)</label><input type="number" step="0.01" placeholder="0.00" value={cs.ctc} onChange={e=>setCs(s=>({...s,ctc:e.target.value}))}/></div>
+          <div className="cf"><label>New Credit</label><input type="number" step="0.01" placeholder="0.00" value={cs.nc} onChange={e=>setCs(s=>({...s,nc:e.target.value}))}/></div>
+          {rr&&<div className={`cres ${rr.ok?'cyes':'cno'}`}>Net: {fd(rr.n,2)} → {rr.ok?'✅ YES — ROLL':'❌ NO — DO NOT ROLL'}</div>}
+        </div>
+      </div>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
