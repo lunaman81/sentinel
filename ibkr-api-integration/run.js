@@ -1,14 +1,23 @@
 #!/usr/bin/env node
 /**
  * IBKR API Integration Runner
- * 
+ *
  * Usage:
- *   node run.js              # One-shot: generate CSV from current positions
- *   node run.js --push       # Generate CSV + copy to latest.csv + git push
- *   node run.js --monitor    # Generate CSV + start live price monitoring
+ *   node run.js              # One-shot: generate CSV from current positions (requires Gateway)
+ *   node run.js --push       # Flex Query: fetch → convert → QA → push to GitHub
+ *   node run.js --monitor    # Generate CSV + start live price monitoring (requires Gateway)
  *   node run.js --spike      # Quick auth test (validates gateway connection)
- * 
- * Prerequisites:
+ *
+ * --push mode uses Flex Query API (no Gateway needed):
+ *   1. Runs flex-fetch.js to download raw Flex CSV
+ *   2. Runs flex-to-activity.js to convert to Activity Statement format
+ *   3. Runs dashboard-qa.js to validate — aborts if bugs found
+ *   4. Copies to ~/sentinel/latest.csv, git add/commit/push
+ *
+ * Prerequisites for --push:
+ *   ~/.sentinel-flex-config.json with token and queryId
+ *
+ * Prerequisites for other modes:
  *   1. IBKR Client Portal Gateway running (see README.md)
  *   2. Authenticated in browser at https://localhost:5000
  *   3. config.js updated with your account ID
@@ -17,19 +26,83 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { IBKRApi } = require('./ibkr-api');
-const { CSVGenerator } = require('./ibkr-to-csv');
-const { LiveMonitor } = require('./live-monitor');
-const config = require('./config');
 
 const MODES = {
   SPIKE:   '--spike',
   CSV:     '--csv',      // default
   MONITOR: '--monitor',
+  PUSH:    '--push',
 };
+
+// ── Flex Query Push Mode ──────────────────────────────────────
+async function flexPush() {
+  const __dir = __dirname;
+  const sentinelDir = path.resolve(__dir, '..');
+  const latestCsv = path.join(sentinelDir, 'latest.csv');
+
+  // Step 1: Fetch raw Flex CSV
+  console.log('\n═══ STEP 1: Fetching Flex Query from IBKR ═══');
+  try {
+    execSync('node flex-fetch.js', { cwd: __dir, stdio: 'inherit' });
+  } catch (err) {
+    console.error('❌ flex-fetch.js failed. Aborting.');
+    process.exit(1);
+  }
+
+  // Step 2: Convert to Activity Statement format
+  console.log('\n═══ STEP 2: Converting to Activity Statement ═══');
+  try {
+    execSync('node flex-to-activity.js', { cwd: __dir, stdio: 'inherit' });
+  } catch (err) {
+    console.error('❌ flex-to-activity.js failed. Aborting.');
+    process.exit(1);
+  }
+
+  // Step 3: QA validation
+  console.log('\n═══ STEP 3: Running QA validation ═══');
+  try {
+    execSync(`node dashboard-qa.js latest.csv`, { cwd: sentinelDir, stdio: 'inherit' });
+  } catch (err) {
+    console.error('❌ QA validation failed. Aborting push.');
+    process.exit(1);
+  }
+
+  // Step 4: Git push
+  console.log('\n═══ STEP 4: Pushing to GitHub ═══');
+  const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+  try {
+    execSync('git add latest.csv', { cwd: sentinelDir, stdio: 'pipe' });
+    execSync(`git commit -m "data: Flex update ${now}"`, { cwd: sentinelDir, stdio: 'pipe' });
+    execSync('git push origin main', { cwd: sentinelDir, stdio: 'pipe' });
+    console.log(`\n✅ Pushed to GitHub: data: Flex update ${now}`);
+  } catch (err) {
+    if (err.stderr && err.stderr.toString().includes('nothing to commit')) {
+      console.log('ℹ️  No changes to commit (data unchanged).');
+    } else {
+      console.error(`⚠️  Git push failed: ${err.message}`);
+      process.exit(1);
+    }
+  }
+
+  console.log('\n══════════════════════════════════════════════');
+  console.log('✅ FLEX PUSH COMPLETE');
+  console.log('══════════════════════════════════════════════\n');
+}
 
 async function main() {
   const mode = process.argv[2] || MODES.CSV;
+
+  // --push uses Flex Query API (no Gateway needed)
+  if (mode === MODES.PUSH) {
+    return flexPush();
+  }
+
+  // All other modes require Gateway
+  const { IBKRApi } = require('./ibkr-api');
+  const { CSVGenerator } = require('./ibkr-to-csv');
+  const { LiveMonitor } = require('./live-monitor');
+  const config = require('./config');
+
   const api = new IBKRApi(config);
 
   try {
@@ -184,24 +257,6 @@ async function main() {
 
     console.log(`\n✅ CSV generated: ${filepath}`);
     console.log(`   Upload this to your dashboard — parser will read it identically to a manual IBKR download.`);
-
-    // ── Step 5b: Push to git (optional) ───────────────────────
-    if (process.argv.includes('--push')) {
-      const sentinelDir = path.resolve(__dirname, '..');
-      const latestCsv = path.join(sentinelDir, 'latest.csv');
-      fs.copyFileSync(filepath, latestCsv);
-      console.log(`\n📤 Copied to ${latestCsv}`);
-
-      const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
-      try {
-        execSync('git add latest.csv', { cwd: sentinelDir, stdio: 'pipe' });
-        execSync(`git commit -m "data: IBKR update ${now}"`, { cwd: sentinelDir, stdio: 'pipe' });
-        execSync('git push origin main', { cwd: sentinelDir, stdio: 'pipe' });
-        console.log(`✅ Pushed to GitHub: data: IBKR update ${now}`);
-      } catch (err) {
-        console.error(`⚠️  Git push failed: ${err.message}`);
-      }
-    }
 
     // ── Step 6: Monitor mode (optional) ──────────────────────
     if (mode === MODES.MONITOR) {
