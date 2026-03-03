@@ -1,0 +1,44 @@
+Statement,Header,Field Name,Field Value
+Statement,Data,BrokerName,Interactive Brokers LLC
+Statement,Data,BrokerAddress,"Two Pickwick Plaza, Greenwich, CT 06830"
+Statement,Data,Title,Activity Statement
+Statement,Data,Period,"January 1, 2026 - March 3, 2026"
+Statement,Data,WhenGenerated,"2026-03-03, 13:54:37 EST"
+Account Information,Header,Field Name,Field Value
+Account Information,Data,Name,Gabriel Luna-Ostaseski
+Account Information,Data,Account,U12781141
+Account Information,Data,Account Type,Individual
+Account Information,Data,Customer Type,Individual
+Account Information,Data,Account Capabilities,Margin
+Account Information,Data,Base Currency,USD
+Net Asset Value,Header,Asset Class,Prior Total,Current Long,Current Short,Current Total,Change
+Net Asset Value,Data,Cash ,1239381.25,2022023.9,0,2022023.9,782642.65
+Net Asset Value,Data,Stock,1074766.79,278662.74,0,278662.74,-796104.05
+Net Asset Value,Data,Options,-11343.62,0,-34508.45,-34508.45,-23164.83
+Net Asset Value,Data,Interest Accruals,3018.99,0,0,0,-3018.99
+Net Asset Value,Data,Total,2305823.41,2300686.64,-34508.45,2270970,-34853.41
+Net Asset Value,Header,Time Weighted Rate of Return
+Net Asset Value,Data,0%
+Change in NAV,Header,Field Name,Field Value
+Change in NAV,Data,Starting Value,2305823.41
+Change in NAV,Data,Realized P/L,4752
+Change in NAV,Data,Change in Unrealized P/L,-94552.89
+Change in NAV,Data,Deposits & Withdrawals,0
+Change in NAV,Data,Interest,0
+Change in NAV,Data,Ending Value,2270970
+Open Positions,Header,DataDiscriminator,Asset Category,Currency,Symbol,Quantity,Mult,Cost Price,Cost Basis,Close Price,Value,Unrealized P/L,Code
+Open Positions,Data,Summary,Stocks,USD,EOSE,7500,1,14.08925105,105669.38288,6.06,45450,-60219.38,
+Open Positions,Data,Summary,Stocks,USD,IBKR,19.6204,1,75.450001,1480.3592,69.21,1357.93,-122.43,
+Open Positions,Data,Summary,Stocks,USD,IREN,6000,1,42.4505041,254703.0246,38.7,232200,-22503.02,
+Open Positions,Total,,Stocks,USD,,,,,361852.76668,,279007.93,-82844.83,
+Open Positions,Header,DataDiscriminator,Asset Category,Currency,Symbol,Quantity,Mult,Cost Price,Cost Basis,Close Price,Value,Unrealized P/L,Code
+Open Positions,Data,Summary,Equity and Index Options,USD,MRNA 06MAR26 45.5 P,-50,100,0.2529796,-1264.898,0.55,-2750,1129.58,
+Open Positions,Data,Summary,Equity and Index Options,USD,GLW 06MAR26 138 P,-10,100,2.0529796,-2052.9796,1.21,-1210,432.26,
+Open Positions,Data,Summary,Equity and Index Options,USD,NCLH 06MAR26 21 P,-50,100,0.1764796,-882.398,0.43,-2150,-1512.72,
+Open Positions,Data,Summary,Equity and Index Options,USD,LRCX 06MAR26 215 P,-13,100,2.6854796,-3491.12348,5.8,-7540,-4054.93,
+Open Positions,Data,Summary,Equity and Index Options,USD,MU 06MAR26 372.5 P,-8,100,4.9929796,-3994.38368,9.25,-7400,-3794.46,
+Open Positions,Data,Summary,Equity and Index Options,USD,INTC 06MAR26 42 P,-48,100,0.5554796,-2666.30208,0.69,-3312,-796.1,
+Open Positions,Data,Summary,Equity and Index Options,USD,WDC 06MAR26 247.5 P,-12,100,2.2629796,-2715.57552,8.95,-10740,-7540.29,
+Open Positions,Data,Summary,Equity and Index Options,USD,TGT 06MAR26 105 P,0,100,0,0,0.05,0,0,
+Open Positions,Data,Summary,Equity and Index Options,USD,IREN 06MAR26 44 C,-60,100,1.0129876,-6077.9256,0.24,-1440,4773.8,
+Open Positions,Total,,Equity and Index Options,USD,,,,,-23145.58596,,-36542,-11362.86,
