@@ -1,0 +1,16 @@
+{
+  "name": "ibkr-sentinel-api",
+  "version": "1.0.0",
+  "description": "IBKR Client Portal API integration for Sentinel dashboard",
+  "main": "run.js",
+  "scripts": {
+    "spike": "node run.js --spike",
+    "csv": "node run.js",
+    "monitor": "node run.js --monitor",
+    "validate": "node validate.js"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
