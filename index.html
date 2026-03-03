@@ -67,7 +67,7 @@ tr:hover td{background:var(--s2)}
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const{useState,useMemo,useRef,useCallback}=React;
+const{useState,useMemo,useRef,useCallback,useEffect}=React;
 
 const SEN={mxExp:12,wnExp:10,mxDep:85,frzPct:-3,profTgt:80,zdTgt:90,minCush:5};
 const BL=['MSTR','RIOT','DDOG','ABNB','META','SHOP','COIN','AMZN','OPEN','AMD'];
@@ -97,7 +97,7 @@ function extract(S){
   const tr=nr.find(r=>/^\d/.test(r[0])); const twr=tr?p(tr[0]):0;
   const ch=(S['Change in NAV']||{}).d||[];
   const gc=l=>{const r=ch.find(x=>x[0]===l);return r?p(r[1]):0};
-  const rPL=gc('Realized P/L'),uCh=gc('Change in Unrealized P/L'),dep=gc('Deposits & Withdrawals');
+  const dep=gc('Deposits & Withdrawals');const pfA2=(S['Realized & Unrealized Performance Summary']||{}).d||[];const pfTA=pfA2.find(r=>r[0]==='Total (All Assets)');const rPL=pfTA?p(pfTA[7]):0;const uCh=pfTA?p(pfTA[12]):0;
   const st=(S['Statement']||{}).d||[];
   const period=(st.find(r=>r[0]==='Period')||[])[1]||'';
   const gen=(st.find(r=>r[0]==='WhenGenerated')||[])[1]||'';
@@ -113,7 +113,7 @@ function extract(S){
   const pf=(S['Realized & Unrealized Performance Summary']||{}).d||[];
   const oPerf=pf.filter(r=>r[0]==='Equity and Index Options').map(r=>({sym:r[1],rTot:p(r[7]),uTot:p(r[12])}));
   const dd=(S['Deposits & Withdrawals']||{}).d||[];
-  const deps=dd.filter(r=>r[0]!=='Total').map(r=>({cur:r[0],date:r[1],desc:r[2],amt:p(r[3])}));
+  const deps=dd.filter(r=>r[0]!=='Total').map(r=>({cur:r[0],acct:r[1],date:r[2],desc:r[3],amt:p(r[4])}));
   return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,stocks,options,trades,oPerf,deps};
 }
 
@@ -130,7 +130,20 @@ function App(){
   const[data,setData]=useState(null);
   const[tab,setTab]=useState('positions');
   const[cs,setCs]=useState({ctc:'',nc:''});
+  const[autoLoaded,setAutoLoaded]=useState(false);
   const fr=useRef();
+
+  useEffect(()=>{
+    fetch('https://raw.githubusercontent.com/lunaman81/sentinel/main/latest.csv?v='+Date.now())
+      .then(r=>{if(!r.ok)throw new Error('not ok');return r.text()})
+      .then(text=>{
+        if(!text.includes('Statement'))return;
+        const S=parseCSV(text);
+        setData(extract(S));
+        setAutoLoaded(true);
+      })
+      .catch(()=>{});
+  },[]);
 
   const onUp=useCallback(e=>{
     const f=e.target.files[0];if(!f)return;
@@ -141,6 +154,7 @@ function App(){
         const S=parseCSV(ev.target.result);
         if(!S['Open Positions']&&!S['Net Asset Value']){alert('Error: Not an IBKR Activity Statement.');return}
         setData(extract(S));
+        setAutoLoaded(false);
       }catch(err){alert('Parse error: '+err.message)}
     };rd.readAsText(f);
   },[]);
@@ -196,7 +210,7 @@ function App(){
     const pw=pp.filter(o=>o.rTot>0).length,cw=cp.filter(o=>o.rTot>0).length;
     const pt=pp.reduce((a,o)=>a+o.rTot,0),ct=cp.reduce((a,o)=>a+o.rTot,0);
 
-    const hnc=eq.filter(e=>e.totCC===0&&Math.abs(e.val)>100);
+    const hnc=eq.filter(e=>{const hcc=options.some(o=>{const pp=pOpt(o.sym);return pp&&pp.tk===e.sym&&pp.tp==='C'});return !hcc&&Math.abs(e.val)>100});
 
     // Weekly P&L by option expiry
     const wk={};
@@ -243,7 +257,10 @@ function App(){
   return(
     <div className="app">
       <div className="hdr"><h1>🛡️ <b>Sentinel</b> Wheel Dashboard</h1>
-        <label className="ubtn">Upload IBKR CSV<input type="file" accept=".csv" onChange={onUp} ref={fr}/></label></div>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          {autoLoaded&&<span style={{color:'#9ca3af',fontSize:11}}>Auto-loaded</span>}
+          <label className="ubtn">Upload IBKR CSV<input type="file" accept=".csv" onChange={onUp} ref={fr}/></label>
+        </div></div>
 
       {data&&<div className="banner b-warn">⚠️ Snapshot: {data.period} — Generated {data.gen} — Verify live in IBKR before trading</div>}
       {data&&c.frz.length>0&&<div className="banner b-freeze">🧊 FROZEN: {c.frz.join(', ')} — P&L below {SEN.frzPct}% NAV. No new positions.</div>}

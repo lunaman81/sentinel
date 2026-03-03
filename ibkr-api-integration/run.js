@@ -4,6 +4,7 @@
  * 
  * Usage:
  *   node run.js              # One-shot: generate CSV from current positions
+ *   node run.js --push       # Generate CSV + copy to latest.csv + git push
  *   node run.js --monitor    # Generate CSV + start live price monitoring
  *   node run.js --spike      # Quick auth test (validates gateway connection)
  * 
@@ -15,6 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const { IBKRApi } = require('./ibkr-api');
 const { CSVGenerator } = require('./ibkr-to-csv');
 const { LiveMonitor } = require('./live-monitor');
@@ -182,6 +184,24 @@ async function main() {
 
     console.log(`\n✅ CSV generated: ${filepath}`);
     console.log(`   Upload this to your dashboard — parser will read it identically to a manual IBKR download.`);
+
+    // ── Step 5b: Push to git (optional) ───────────────────────
+    if (process.argv.includes('--push')) {
+      const sentinelDir = path.resolve(__dirname, '..');
+      const latestCsv = path.join(sentinelDir, 'latest.csv');
+      fs.copyFileSync(filepath, latestCsv);
+      console.log(`\n📤 Copied to ${latestCsv}`);
+
+      const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
+      try {
+        execSync('git add latest.csv', { cwd: sentinelDir, stdio: 'pipe' });
+        execSync(`git commit -m "data: IBKR update ${now}"`, { cwd: sentinelDir, stdio: 'pipe' });
+        execSync('git push origin main', { cwd: sentinelDir, stdio: 'pipe' });
+        console.log(`✅ Pushed to GitHub: data: IBKR update ${now}`);
+      } catch (err) {
+        console.error(`⚠️  Git push failed: ${err.message}`);
+      }
+    }
 
     // ── Step 6: Monitor mode (optional) ──────────────────────
     if (mode === MODES.MONITOR) {

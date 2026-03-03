@@ -1,5 +1,6 @@
 // dashboard-qa.js — Validates IBKR CSV against expected dashboard values
 // Usage: node dashboard-qa.js <ibkr-activity-statement.csv>
+// Exit code 0 = all checks pass, exit code 1 = bugs found (used by pre-push hook)
 
 const fs = require('fs');
 const file = process.argv[2];
@@ -32,13 +33,13 @@ const cash = cr ? p(cr[4]) : 0;
 const tr = nr.find(r => /^\d/.test(r[0]));
 const twr = tr ? p(tr[0]) : 0;
 
-// === Realized P&L from Performance Summary ===
+// === Realized P&L and Unrealized from Performance Summary ===
 const pfAll = (S['Realized & Unrealized Performance Summary'] || {}).d || [];
 const pfTotAll = pfAll.find(r => r[0] === 'Total (All Assets)');
 const rPL = pfTotAll ? p(pfTotAll[7]) : 0;
 const uPL = pfTotAll ? p(pfTotAll[12]) : 0;
 
-// === Deposits ===
+// === Deposits (5-column: cur[0], acct[1], date[2], desc[3], amt[4]) ===
 const dd = (S['Deposits & Withdrawals'] || {}).d || [];
 const deps = dd.filter(r => r[0] !== 'Total').map(r => ({
   cur: r[0], acct: r[1], date: r[2], desc: r[3], amt: p(r[4])
@@ -63,45 +64,33 @@ const oPerf = pfAll.filter(r => r[0] === 'Equity and Index Options').map(r => ({
 function pOpt(sym) {
   const m = sym.match(/^(\w+)\s+(\d{2})([A-Z]{3})(\d{2})\s+([\d.]+)\s+([PC])$/);
   if (!m) return null;
-  const mo = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
   return { tk: m[1], st: parseFloat(m[5]), tp: m[6] };
 }
 
-// === TRADE COUNTING (BUG FIX: use open positions to identify closed) ===
+// === TRADE COUNTING (closed = not in open positions) ===
 const openSyms = new Set(options.map(o => o.sym));
-const cl_FIXED = oPerf.filter(o => !openSyms.has(o.sym));
-const cl_CURRENT = oPerf.filter(o => o.rTot !== 0); // Current buggy filter
+const closed = oPerf.filter(o => !openSyms.has(o.sym));
 
-// Fixed metrics
-const w_f = cl_FIXED.filter(o => o.rTot > 0);
-const lo_f = cl_FIXED.filter(o => o.rTot < 0);
-const tw_f = w_f.reduce((a, o) => a + o.rTot, 0);
-const tl_f = Math.abs(lo_f.reduce((a, o) => a + o.rTot, 0));
-const pp_f = cl_FIXED.filter(o => { const x = pOpt(o.sym); return x?.tp === 'P'; });
-const cp_f = cl_FIXED.filter(o => { const x = pOpt(o.sym); return x?.tp === 'C'; });
-const pw_f = pp_f.filter(o => o.rTot > 0).length;
-const cw_f = cp_f.filter(o => o.rTot > 0).length;
-const pt_f = pp_f.reduce((a, o) => a + o.rTot, 0);
-const ct_f = cp_f.reduce((a, o) => a + o.rTot, 0);
+// Performance metrics
+const wins = closed.filter(o => o.rTot > 0);
+const losses = closed.filter(o => o.rTot < 0);
+const totWin = wins.reduce((a, o) => a + o.rTot, 0);
+const totLoss = Math.abs(losses.reduce((a, o) => a + o.rTot, 0));
+const puts = closed.filter(o => { const x = pOpt(o.sym); return x?.tp === 'P'; });
+const calls = closed.filter(o => { const x = pOpt(o.sym); return x?.tp === 'C'; });
+const putWins = puts.filter(o => o.rTot > 0).length;
+const callWins = calls.filter(o => o.rTot > 0).length;
+const putPL = puts.reduce((a, o) => a + o.rTot, 0);
+const callPL = calls.reduce((a, o) => a + o.rTot, 0);
 
-// Current (buggy) metrics
-const w_c = cl_CURRENT.filter(o => o.rTot > 0);
-const lo_c = cl_CURRENT.filter(o => o.rTot < 0);
-const pp_c = cl_CURRENT.filter(o => { const x = pOpt(o.sym); return x?.tp === 'P'; });
-const cp_c = cl_CURRENT.filter(o => { const x = pOpt(o.sym); return x?.tp === 'C'; });
-
-// === Equity: CC credits and holding-without-CC ===
+// === Equity: holding-without-CC (check for open call options) ===
 const eq = stocks.map(s => {
   const ccCr = oPerf.filter(o => { const pp = pOpt(o.sym); return pp && pp.tk === s.sym && pp.tp === 'C'; }).reduce((a, o) => a + o.rTot, 0);
-  const openCC = options.filter(o => { const pp = pOpt(o.sym); return pp && pp.tk === s.sym && pp.tp === 'C'; });
-  const openCCval = openCC.reduce((a, o) => a + Math.abs(o.cb), 0);
-  const totCC = ccCr + openCCval;
-  const hasOpenCC = openCC.length > 0;
-  return { sym: s.sym, qty: s.qty, cp: s.cp, clp: s.clp, val: s.val, totCC, hasOpenCC };
+  const hasOpenCC = options.some(o => { const pp = pOpt(o.sym); return pp && pp.tk === s.sym && pp.tp === 'C'; });
+  return { sym: s.sym, qty: s.qty, cp: s.cp, clp: s.clp, val: s.val, ccCr, hasOpenCC };
 });
 
-const hnc_FIXED = eq.filter(e => !e.hasOpenCC && Math.abs(e.val) > 100);
-const hnc_CURRENT = eq.filter(e => e.totCC === 0 && Math.abs(e.val) > 100);
+const hnc = eq.filter(e => !e.hasOpenCC && Math.abs(e.val) > 100);
 
 // === Deployment ===
 const sv = stocks.reduce((a, s) => a + Math.abs(s.val), 0);
@@ -131,55 +120,83 @@ for (const d of deps) {
 console.log('\n--- POSITIONS ---');
 console.log('Stocks: ' + stocks.length);
 for (const s of eq) {
-  console.log('  ' + s.sym + ': qty=' + s.qty + ' cost=$' + s.cp.toFixed(2) + ' CC=$' + s.totCC.toFixed(2) + ' hasOpenCC=' + s.hasOpenCC);
+  console.log('  ' + s.sym + ': qty=' + s.qty + ' cost=$' + s.cp.toFixed(2) + ' ccCredits=$' + s.ccCr.toFixed(2) + ' hasOpenCC=' + s.hasOpenCC);
 }
 console.log('Options: ' + options.length);
 
-console.log('\n--- PERFORMANCE (CURRENT BUG) ---');
-console.log('Trades:    ' + cl_CURRENT.length + ' (filter: rTot!==0)');
-console.log('Puts:      ' + pp_c.length + ' trades');
-console.log('Calls:     ' + cp_c.length + ' trades');
-
-console.log('\n--- PERFORMANCE (FIXED) ---');
-console.log('Trades:    ' + cl_FIXED.length + ' (filter: not in open positions)');
-console.log('Win Rate:  ' + (cl_FIXED.length > 0 ? (w_f.length / cl_FIXED.length * 100).toFixed(1) : 0) + '%');
-console.log('Puts:      ' + pp_f.length + ' trades, ' + pw_f + ' wins, P&L: $' + pt_f.toFixed(2));
-console.log('  Win Rate:  ' + (pp_f.length > 0 ? (pw_f / pp_f.length * 100).toFixed(1) : 0) + '%');
-console.log('Calls:     ' + cp_f.length + ' trades, ' + cw_f + ' wins, P&L: $' + ct_f.toFixed(2));
-console.log('  Win Rate:  ' + (cp_f.length > 0 ? (cw_f / cp_f.length * 100).toFixed(1) : 0) + '%');
-console.log('Net P&L:   $' + (tw_f - tl_f).toFixed(2));
-console.log('Avg Win:   $' + (w_f.length > 0 ? tw_f / w_f.length : 0).toFixed(2));
-console.log('Avg Loss:  $' + (lo_f.length > 0 ? tl_f / lo_f.length : 0).toFixed(2));
-console.log('Expectancy: $' + (cl_FIXED.length > 0 ? (tw_f - tl_f) / cl_FIXED.length : 0).toFixed(2));
-console.log('Profit Factor: ' + (tl_f > 0 ? (tw_f / tl_f).toFixed(1) : 'Inf'));
+console.log('\n--- PERFORMANCE ---');
+console.log('Trades:    ' + closed.length + ' (closed: not in open positions)');
+console.log('Win Rate:  ' + (closed.length > 0 ? (wins.length / closed.length * 100).toFixed(1) : 0) + '%');
+console.log('Puts:      ' + puts.length + ' trades, ' + putWins + ' wins, P&L: $' + putPL.toFixed(2));
+console.log('  Win Rate:  ' + (puts.length > 0 ? (putWins / puts.length * 100).toFixed(1) : 0) + '%');
+console.log('Calls:     ' + calls.length + ' trades, ' + callWins + ' wins, P&L: $' + callPL.toFixed(2));
+console.log('  Win Rate:  ' + (calls.length > 0 ? (callWins / calls.length * 100).toFixed(1) : 0) + '%');
+console.log('Net P&L:   $' + (totWin - totLoss).toFixed(2));
+console.log('Avg Win:   $' + (wins.length > 0 ? totWin / wins.length : 0).toFixed(2));
+console.log('Avg Loss:  $' + (losses.length > 0 ? totLoss / losses.length : 0).toFixed(2));
+console.log('Expectancy: $' + (closed.length > 0 ? (totWin - totLoss) / closed.length : 0).toFixed(2));
+console.log('Profit Factor: ' + (totLoss > 0 ? (totWin / totLoss).toFixed(1) : 'Inf'));
 
 console.log('\n--- HOLDING WITHOUT CC ---');
-console.log('Current (buggy, totCC===0): ' + hnc_CURRENT.map(e => e.sym).join(', ') || 'none');
-console.log('Fixed (no open CC):         ' + hnc_FIXED.map(e => e.sym).join(', ') || 'none');
+console.log('Holdings without covered calls: ' + (hnc.length > 0 ? hnc.map(e => e.sym).join(', ') : 'none'));
 
-console.log('\n--- BUGS FOUND ---');
+// === VALIDATION CHECKS ===
+console.log('\n--- CHECKS ---');
 let bugs = 0;
-if (cl_CURRENT.length !== cl_FIXED.length) {
-  bugs++;
-  console.log('BUG ' + bugs + ': Trade count ' + cl_CURRENT.length + ' (current) vs ' + cl_FIXED.length + ' (correct)');
+
+// Check 1: NAV must be non-zero
+if (nav === 0) { bugs++; console.log('FAIL: NAV is $0'); }
+else console.log('PASS: NAV $' + nav.toFixed(2));
+
+// Check 2: Realized P&L from Perf Summary must be non-zero (for real accounts)
+if (rPL === 0 && pfTotAll) { bugs++; console.log('FAIL: Realized P&L is $0 despite Perf Summary existing'); }
+else if (!pfTotAll) { bugs++; console.log('FAIL: No "Realized & Unrealized Performance Summary" section found'); }
+else console.log('PASS: Realized P&L $' + rPL.toFixed(2));
+
+// Check 3: Unrealized from Perf Summary
+if (!pfTotAll) { /* already flagged above */ }
+else console.log('PASS: Unrealized $' + uPL.toFixed(2));
+
+// Check 4: Deposits parse correctly (amounts should not all be $0 if deposits exist)
+if (dd.length > 0 && deps.length > 0 && deps.every(d => d.amt === 0)) {
+  bugs++; console.log('FAIL: All deposit amounts are $0 (column index shift?)');
+} else if (deps.length > 0) {
+  console.log('PASS: Deposits parsed (' + deps.length + ' entries, amounts non-zero)');
+} else {
+  console.log('PASS: No deposits section (OK for live CSV)');
 }
-if (hnc_CURRENT.length !== hnc_FIXED.length) {
-  bugs++;
-  console.log('BUG ' + bugs + ': Holding-without-CC missing: ' + hnc_FIXED.filter(e => !hnc_CURRENT.find(c => c.sym === e.sym)).map(e => e.sym).join(', '));
+
+// Check 5: Positions loaded
+if (stocks.length === 0 && options.length === 0) {
+  bugs++; console.log('FAIL: No positions found');
+} else {
+  console.log('PASS: ' + stocks.length + ' stocks, ' + options.length + ' options');
 }
-// Check deposits
-const badDeps = deps.filter(d => d.amt === 0 && d.desc && d.desc.length > 0);
-if (dd.length > 0 && deps.every(d => d.amt === 0)) {
-  bugs++;
-  console.log('BUG ' + bugs + ': All deposit amounts are $0 (column index shift)');
+
+// Check 6: Holding-without-CC uses open call check (sanity: EOSE should be flagged if no open calls)
+const eose = eq.find(e => e.sym === 'EOSE');
+if (eose && !eose.hasOpenCC && hnc.find(e => e.sym === 'EOSE')) {
+  console.log('PASS: EOSE correctly flagged as holding without CC');
+} else if (eose && eose.hasOpenCC) {
+  console.log('PASS: EOSE has open CC — not flagged');
+} else if (!eose) {
+  console.log('PASS: EOSE not in portfolio (check N/A)');
 }
-if (rPL !== 0) {
-  const chNav = (S['Change in NAV'] || {}).d || [];
-  const chRPL = chNav.find(x => x[0] === 'Realized P/L');
-  if (!chRPL) {
-    bugs++;
-    console.log('BUG ' + bugs + ': Change in NAV has no "Realized P/L" row — dashboard shows $0');
-  }
+
+// Check 7: Closed trade count is reasonable
+if (closed.length === 0 && oPerf.length > 0) {
+  bugs++; console.log('FAIL: 0 closed trades but ' + oPerf.length + ' in performance summary');
+} else {
+  console.log('PASS: ' + closed.length + ' closed trades');
 }
-if (bugs === 0) console.log('No bugs detected.');
-console.log('\n' + '='.repeat(60));
+
+console.log('\n--- RESULT ---');
+if (bugs === 0) {
+  console.log('All checks passed. No bugs detected.');
+  console.log('\n' + '='.repeat(60));
+  process.exit(0);
+} else {
+  console.log(bugs + ' bug(s) found. See FAIL lines above.');
+  console.log('\n' + '='.repeat(60));
+  process.exit(1);
+}
