@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-04-1301
+- **Timestamp:** 2026-03-04 21:01:36
+- **Mode:** code
+- **QA:** PASS
+- **Description:** Add CLAUDE.md project guide with key files, push rules, and session startup protocol
+- **Files:** CLAUDE.md
+
+
 ## v2026-03-04-1246
 - **Timestamp:** 2026-03-04 20:46:55
 - **Mode:** code
