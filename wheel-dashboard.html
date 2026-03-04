@@ -110,7 +110,10 @@ function extract(S){
     if(r[1]==='Stocks')stocks.push(o);else if(r[1]==='Equity and Index Options')options.push(o);
   }
   const td=(S['Trades']||{}).d||[];
-  const trades=td.filter(r=>r[0]==='Order').map(r=>({cat:r[1],sym:r[3],dt:r[4],qty:p(r[5]),px:p(r[6]),proc:p(r[7]),comm:p(r[8]),bas:p(r[9]),rpl:p(r[10]),code:r[11]||''}));
+  const tH=(S['Trades']||{}).h||[];const tC=tH.length>0?tH[0]:[];
+  const ti=k=>tC.indexOf(k);
+  const iSym=ti('Symbol'),iDt=ti('Date/Time'),iQty=ti('Quantity'),iPx=ti('T. Price'),iProc=ti('Proceeds'),iComm=ti('Comm/Fee'),iBas=ti('Basis'),iRpl=ti('Realized P/L'),iCode=ti('Code');
+  const trades=td.filter(r=>r[0]==='Order').map(r=>({cat:r[1],sym:iSym>=0?r[iSym]:'',dt:iDt>=0?r[iDt]:'',qty:p(r[iQty]),px:p(r[iPx]),proc:p(r[iProc]),comm:p(r[iComm]),bas:p(r[iBas]),rpl:p(r[iRpl]),code:iCode>=0?r[iCode]||'':''}));
   const pf=(S['Realized & Unrealized Performance Summary']||{}).d||[];
   const oPerf=pf.filter(r=>r[0]==='Equity and Index Options').map(r=>({sym:r[1],rTot:p(r[7]),uTot:p(r[12])}));
   const dd=(S['Deposits & Withdrawals']||{}).d||[];

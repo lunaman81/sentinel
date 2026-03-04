@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-04-1246
+- **Timestamp:** 2026-03-04 20:46:55
+- **Mode:** code
+- **QA:** PASS
+- **Description:** Fix Trades column parsing: use header-based indexing to handle Account and C.Price columns in Flex CSV
+- **Files:** index.html, wheel-dashboard.html
+
+
 ## v2026-03-04-1240
 - **Timestamp:** 2026-03-04 20:40:55
 - **Mode:** code
