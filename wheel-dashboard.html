@@ -114,7 +114,8 @@ function extract(S){
   const oPerf=pf.filter(r=>r[0]==='Equity and Index Options').map(r=>({sym:r[1],rTot:p(r[7]),uTot:p(r[12])}));
   const dd=(S['Deposits & Withdrawals']||{}).d||[];
   const deps=dd.filter(r=>r[0]!=='Total').map(r=>({cur:r[0],acct:r[1],date:r[2],desc:r[3],amt:p(r[4])}));
-  return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,stocks,options,trades,oPerf,deps};
+  const refreshed=new Date().toLocaleString('en-US',{timeZone:'America/New_York'});
+  return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,refreshed,stocks,options,trades,oPerf,deps};
 }
 
 function pOpt(sym){
@@ -245,7 +246,7 @@ function App(){
       <div className="hdr"><h1>🛡️ <b>Sentinel</b> Wheel Dashboard</h1>
         <label className="ubtn">Upload IBKR CSV<input type="file" accept=".csv" onChange={onUp} ref={fr}/></label></div>
 
-      {data&&<div className="banner b-warn">⚠️ Snapshot: {data.period} — Generated {data.gen} — Verify live in IBKR before trading</div>}
+      {data&&<div className="banner b-warn">⚠️ Snapshot: {data.period} | Data as of: {data.gen} | Last refreshed: {data.refreshed}</div>}
       {data&&c.frz.length>0&&<div className="banner b-freeze">🧊 FROZEN: {c.frz.join(', ')} — P&L below {SEN.frzPct}% NAV. No new positions.</div>}
       {data&&c.dpct>=SEN.mxDep&&<div className="banner b-deploy">🚨 DEPLOYMENT {fp(c.dpct)} — exceeds {SEN.mxDep}% cap.</div>}
 
