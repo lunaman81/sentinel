@@ -115,8 +115,26 @@ function extract(S){
   const oPerf=pf.filter(r=>r[0]==='Equity and Index Options').map(r=>({sym:r[1],rTot:p(r[7]),uTot:p(r[12])}));
   const dd=(S['Deposits & Withdrawals']||{}).d||[];
   const deps=dd.filter(r=>r[0]!=='Total').map(r=>({cur:r[0],acct:r[1],date:r[2],desc:r[3],amt:p(r[4])}));
+  // Weekly P&L: find current expiry week from open options, sum trade premiums
+  let wkPL=0,wkExp='';
+  const optExpDates=options.map(o=>{const ps=pOpt(o.sym);return ps?ps.exp:null}).filter(Boolean);
+  if(optExpDates.length>0){
+    const now=new Date();now.setHours(0,0,0,0);
+    const nearest=optExpDates.reduce((a,b)=>(!a||Math.abs(b-now)<Math.abs(a-now))?b:a,null);
+    if(nearest){
+      wkExp=nearest;
+      const pad2=n=>String(n).padStart(2,'0');
+      const mos=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+      const expTag=`${pad2(nearest.getDate())}${mos[nearest.getMonth()]}${String(nearest.getFullYear()).slice(2)}`;
+      for(const t of trades){
+        if(t.cat==='Equity and Index Options'&&t.sym.includes(expTag)){
+          wkPL+=t.proc+t.comm;
+        }
+      }
+    }
+  }
   const refreshed=new Date().toLocaleString('en-US',{timeZone:'America/New_York'});
-  return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,refreshed,stocks,options,trades,oPerf,deps};
+  return{nav,cash,pNav,twr,rPL,uCh,dep,period,gen,refreshed,stocks,options,trades,oPerf,deps,wkPL,wkExp};
 }
 
 function pOpt(sym){
@@ -256,6 +274,7 @@ function App(){
         <div className="mc"><div className="mc-l">Cash</div><div className="mc-v">{fd(data.cash)}</div></div>
         <div className="mc"><div className="mc-l">Collateral</div><div className="mc-v">{fd(c.col)}</div></div>
         <div className="mc"><div className="mc-l">Realized P&L</div><div className={`mc-v ${cv(data.rPL)}`}>{fd(data.rPL)}</div></div>
+        <div className="mc"><div className="mc-l">Weekly P&L</div><div className={`mc-v ${cv(data.wkPL)}`}>{fd(data.wkPL)}</div></div>
         <div className="mc"><div className="mc-l">Unrealized Chg</div><div className={`mc-v ${cv(data.uCh)}`}>{fd(data.uCh)}</div></div>
         <div className="mc"><div className="mc-l">TWR</div><div className={`mc-v ${cv(data.twr)}`}>{fp(data.twr,2)}</div></div>
         <div className="mc"><div className="mc-l">Deployment</div><div className={`mc-v ${c.dpct>=SEN.mxDep?'red':''}`}>{fp(c.dpct)}</div></div>

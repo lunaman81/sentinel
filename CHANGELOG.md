@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-04-1240
+- **Timestamp:** 2026-03-04 20:40:55
+- **Mode:** code
+- **QA:** PASS
+- **Description:** Add Weekly P&L metric box to dashboard — sums trade premiums for current expiry week
+- **Files:** index.html, wheel-dashboard.html
+
+
 ## v2026-03-04-1226
 - **Timestamp:** 2026-03-04 20:26:27
 - **Mode:** code
