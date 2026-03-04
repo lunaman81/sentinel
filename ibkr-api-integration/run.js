@@ -5,6 +5,7 @@
  * Usage:
  *   node run.js              # One-shot: generate CSV from current positions (requires Gateway)
  *   node run.js --push       # Flex Query: fetch → convert → QA → push to GitHub
+ *   node run.js --live       # Gateway: generate CSV → push to GitHub, loop every 5 min
  *   node run.js --monitor    # Generate CSV + start live price monitoring (requires Gateway)
  *   node run.js --spike      # Quick auth test (validates gateway connection)
  *
@@ -32,6 +33,7 @@ const MODES = {
   CSV:     '--csv',      // default
   MONITOR: '--monitor',
   PUSH:    '--push',
+  LIVE:    '--live',
 };
 
 // ── Flex Query Push Mode ──────────────────────────────────────
@@ -58,35 +60,224 @@ async function flexPush() {
     process.exit(1);
   }
 
-  // Step 3: QA validation
-  console.log('\n═══ STEP 3: Running QA validation ═══');
-  try {
-    execSync(`node dashboard-qa.js latest.csv`, { cwd: sentinelDir, stdio: 'inherit' });
-  } catch (err) {
-    console.error('❌ QA validation failed. Aborting push.');
-    process.exit(1);
-  }
-
-  // Step 4: Git push
-  console.log('\n═══ STEP 4: Pushing to GitHub ═══');
-  const now = new Date().toISOString().replace('T', ' ').slice(0, 19);
-  try {
-    execSync('git add latest.csv', { cwd: sentinelDir, stdio: 'pipe' });
-    execSync(`git commit -m "data: Flex update ${now}"`, { cwd: sentinelDir, stdio: 'pipe' });
-    execSync('git push origin main', { cwd: sentinelDir, stdio: 'pipe' });
-    console.log(`\n✅ Pushed to GitHub: data: Flex update ${now}`);
-  } catch (err) {
-    if (err.stderr && err.stderr.toString().includes('nothing to commit')) {
-      console.log('ℹ️  No changes to commit (data unchanged).');
-    } else {
-      console.error(`⚠️  Git push failed: ${err.message}`);
-      process.exit(1);
-    }
-  }
+  // Step 3-7: QA → changelog → tag → commit → push (via push-wrapper)
+  const { pushWithQA } = require('./push-wrapper');
+  const result = await pushWithQA({ mode: 'flex' });
+  if (!result.success) process.exit(1);
 
   console.log('\n══════════════════════════════════════════════');
   console.log('✅ FLEX PUSH COMPLETE');
   console.log('══════════════════════════════════════════════\n');
+}
+
+// ── Live Gateway Push Mode (merges live prices into Flex CSV) ──
+const LIVE_INTERVAL_MS = 5 * 60 * 1000;
+
+// Parse Activity Statement CSV into ordered sections
+function parseActivityCSV(text) {
+  const lines = text.replace(/^\uFEFF/, '').split('\n').filter(l => l.trim());
+  // Track sections in order, preserving raw lines grouped by section name
+  const sectionOrder = [];
+  const sectionLines = {};
+  for (const line of lines) {
+    // Parse first field to get section name
+    let first = '', q = false, i = 0;
+    for (; i < line.length; i++) {
+      if (line[i] === '"') { q = !q; continue; }
+      if (line[i] === ',' && !q) break;
+      first += line[i];
+    }
+    const name = first.trim();
+    if (!sectionLines[name]) {
+      sectionOrder.push(name);
+      sectionLines[name] = [];
+    }
+    sectionLines[name].push(line);
+  }
+  return { sectionOrder, sectionLines };
+}
+
+// Build Open Positions section from Gateway positions + live prices
+function buildPositionLines(positions, prices) {
+  const { CSVGenerator } = require('./ibkr-to-csv');
+  const gen = new CSVGenerator('', '');
+  const stocks = positions.filter(p => p.assetClass === 'STK');
+  const options = positions.filter(p => p.assetClass === 'OPT');
+  const lines = [];
+
+  if (stocks.length > 0 || options.length > 0) {
+    lines.push('Open Positions,Header,DataDiscriminator,Asset Category,Currency,Symbol,Quantity,Mult,Cost Price,Cost Basis,Close Price,Value,Unrealized P/L,Code');
+  }
+
+  for (const p of stocks) {
+    const mapped = gen._mapStockPosition(p, prices);
+    lines.push(`Open Positions,Data,Summary,Stocks,USD,${mapped.symbol},${mapped.qty},1,${mapped.costPrice},${mapped.costBasis},${mapped.closePrice},${mapped.value},${mapped.unrealizedPL},`);
+  }
+
+  for (const p of options) {
+    const mapped = gen._mapOptionPosition(p, prices);
+    lines.push(`Open Positions,Data,Summary,Equity and Index Options,USD,${mapped.symbol},${mapped.qty},100,${mapped.costPrice},${mapped.costBasis},${mapped.closePrice},${mapped.value},${mapped.unrealizedPL},`);
+  }
+
+  return lines;
+}
+
+// Build NAV section from Gateway ledger data, preserving prior totals from Flex
+function buildNavLines(ledger, priorNavLines) {
+  const usd = ledger?.USD || ledger?.BASE || {};
+  const cash = parseFloat(usd.cashbalance) || 0;
+  const stock = parseFloat(usd.stockmarketvalue) || 0;
+  const opts = parseFloat(usd.optionmarketvalue) || 0;
+  const interest = parseFloat(usd.accruedinterest) || 0;
+  const total = parseFloat(usd.netliquidationvalue) || 0;
+
+  // Extract prior totals from existing Flex NAV lines
+  function priorVal(assetName) {
+    const line = priorNavLines.find(l => {
+      const parts = l.split(',');
+      return parts[1] === 'Data' && parts[2]?.trim() === assetName;
+    });
+    if (!line) return 0;
+    const parts = line.split(',');
+    return parseFloat(parts[3]) || 0;
+  }
+  const priorCash = priorVal('Cash');
+  const priorStock = priorVal('Stock');
+  const priorOpts = priorVal('Options');
+  const priorInterest = priorVal('Interest Accruals');
+  const priorTotal = priorVal('Total');
+
+  const totalLong = cash + Math.max(0, stock) + Math.max(0, opts) + interest;
+  const totalShort = Math.min(0, opts);
+
+  const lines = [];
+  lines.push('Net Asset Value,Header,Asset Class,Prior Total,Current Long,Current Short,Current Total,Change');
+  lines.push(`Net Asset Value,Data,Cash ,${priorCash},${cash},0,${cash},${cash - priorCash}`);
+  lines.push(`Net Asset Value,Data,Stock,${priorStock},${Math.max(0, stock)},0,${Math.max(0, stock)},${stock - priorStock}`);
+  lines.push(`Net Asset Value,Data,Options,${priorOpts},${Math.max(0, opts)},${Math.min(0, opts)},${opts},${opts - priorOpts}`);
+  lines.push(`Net Asset Value,Data,Interest Accruals,${priorInterest},${interest},0,${interest},${interest - priorInterest}`);
+  lines.push(`Net Asset Value,Data,Total,${priorTotal},${totalLong},${totalShort},${total},${total - priorTotal}`);
+
+  // Preserve TWR from Flex
+  const twrLine = priorNavLines.find(l => l.includes('Time Weighted Rate'));
+  const twrDataLine = priorNavLines.find(l => l.match(/Net Asset Value,Data,[\d.-]+%/));
+  if (twrLine) lines.push(twrLine);
+  if (twrDataLine) lines.push(twrDataLine);
+
+  return lines;
+}
+
+async function livePush() {
+  const { IBKRApi } = require('./ibkr-api');
+  const config = require('./config');
+
+  const sentinelDir = path.resolve(__dirname, '..');
+  const latestCsv = path.join(sentinelDir, 'latest.csv');
+  const api = new IBKRApi(config);
+
+  // Require existing latest.csv from a prior --push run
+  if (!fs.existsSync(latestCsv)) {
+    console.error('❌ No latest.csv found. Run --push first to establish baseline Flex data.');
+    process.exit(1);
+  }
+
+  // Step 1: Authenticate once
+  console.log('\n═══ LIVE MODE: Merge live prices into Flex CSV (every 5 min) ═══');
+  console.log('🔐 Checking IBKR authentication...');
+  await api.waitForAuth(15_000);
+  api.startKeepalive();
+  const accounts = await api.getAccounts();
+  console.log(`📋 Account: ${api.accountId}`);
+
+  let cycle = 0;
+
+  async function tick() {
+    cycle++;
+    const ts = new Date().toLocaleTimeString();
+    console.log(`\n──── Cycle ${cycle} @ ${ts} ────`);
+
+    try {
+      // Step 2: Read existing Flex CSV
+      const existing = fs.readFileSync(latestCsv, 'utf-8');
+      const { sectionOrder, sectionLines } = parseActivityCSV(existing);
+
+      // Step 3: Pull live data from Gateway
+      console.log('📡 Pulling live data from IBKR...');
+      const [ledger, positions] = await Promise.all([
+        api.getAccountLedger(),
+        api.getPositions(),
+      ]);
+      console.log(`   Positions: ${positions.length}`);
+
+      const conids = positions.map(p => p.conid).filter(Boolean);
+      let prices = {};
+      if (conids.length > 0) {
+        const snapshots = await api.getMarketData(conids, config.marketDataFields);
+        if (Array.isArray(snapshots)) {
+          for (const snap of snapshots) {
+            prices[snap.conid] = {
+              lastPrice: parseFloat(snap['31']) || 0,
+              bidPrice:  parseFloat(snap['84']) || 0,
+              askPrice:  parseFloat(snap['86']) || 0,
+            };
+          }
+        }
+        console.log(`   Live prices: ${Object.keys(prices).length} received`);
+      }
+
+      // Step 4: Replace sections with live data, preserve the rest
+      // Update Statement timestamp
+      if (sectionLines['Statement']) {
+        const genLine = sectionLines['Statement'].findIndex(l => l.includes('WhenGenerated'));
+        if (genLine >= 0) {
+          const now = new Date();
+          const gen = now.toISOString().replace('T', ', ').slice(0, 22) + ' EST';
+          sectionLines['Statement'][genLine] = `Statement,Data,WhenGenerated,${gen}`;
+        }
+      }
+
+      // Replace NAV with live values (preserve prior totals from Flex)
+      sectionLines['Net Asset Value'] = buildNavLines(ledger, sectionLines['Net Asset Value'] || []);
+
+      // Replace Open Positions with live data
+      sectionLines['Open Positions'] = buildPositionLines(positions, prices);
+
+      // Step 5: Reassemble CSV in original section order
+      const merged = [];
+      for (const name of sectionOrder) {
+        if (sectionLines[name]) {
+          merged.push(...sectionLines[name]);
+        }
+      }
+
+      fs.writeFileSync(latestCsv, merged.join('\n') + '\n');
+      const stkCount = positions.filter(p => p.assetClass === 'STK').length;
+      const optCount = positions.filter(p => p.assetClass === 'OPT').length;
+      console.log(`   Merged: ${stkCount} stocks, ${optCount} options into Flex CSV`);
+
+      // Step 6-7: QA → changelog → tag → commit → push (via push-wrapper)
+      const { pushWithQA } = require('./push-wrapper');
+      await pushWithQA({ mode: 'live' });
+    } catch (err) {
+      console.error(`⚠️  Cycle ${cycle} failed: ${err.message}`);
+    }
+
+    console.log(`⏳ Next update in 5 minutes...`);
+  }
+
+  // Run first cycle immediately, then loop
+  await tick();
+  const interval = setInterval(() => tick().catch(e => console.error(`⚠️  tick error: ${e.message}`)), LIVE_INTERVAL_MS);
+
+  // Graceful shutdown
+  process.on('SIGINT', () => {
+    console.log('\n\nShutting down live mode...');
+    clearInterval(interval);
+    api.destroy();
+    process.exit(0);
+  });
+
+  console.log('Press Ctrl+C to stop.\n');
 }
 
 async function main() {
@@ -95,6 +286,11 @@ async function main() {
   // --push uses Flex Query API (no Gateway needed)
   if (mode === MODES.PUSH) {
     return flexPush();
+  }
+
+  // --live uses Gateway + loops every 5 min
+  if (mode === MODES.LIVE) {
+    return livePush();
   }
 
   // All other modes require Gateway

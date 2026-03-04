@@ -105,6 +105,7 @@ function extract(S){
   const stocks=[],options=[];
   for(const r of pd){
     if(r[0]!=='Summary')continue;
+    if(p(r[4])===0)continue;
     const o={cat:r[1],sym:r[3],qty:p(r[4]),mult:p(r[5]),cp:p(r[6]),cb:p(r[7]),clp:p(r[8]),val:p(r[9]),upl:p(r[10])};
     if(r[1]==='Stocks')stocks.push(o);else if(r[1]==='Equity and Index Options')options.push(o);
   }

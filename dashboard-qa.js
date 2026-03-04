@@ -150,11 +150,11 @@ else console.log('PASS: NAV $' + nav.toFixed(2));
 
 // Check 2: Realized P&L from Perf Summary must be non-zero (for real accounts)
 if (rPL === 0 && pfTotAll) { bugs++; console.log('FAIL: Realized P&L is $0 despite Perf Summary existing'); }
-else if (!pfTotAll) { bugs++; console.log('FAIL: No "Realized & Unrealized Performance Summary" section found'); }
+else if (!pfTotAll) { console.log('PASS: No Perf Summary section (OK for live Gateway CSV)'); }
 else console.log('PASS: Realized P&L $' + rPL.toFixed(2));
 
 // Check 3: Unrealized from Perf Summary
-if (!pfTotAll) { /* already flagged above */ }
+if (!pfTotAll) { /* no perf summary — already noted above */ }
 else console.log('PASS: Unrealized $' + uPL.toFixed(2));
 
 // Check 4: Deposits parse correctly (amounts should not all be $0 if deposits exist)
@@ -183,7 +183,7 @@ if (eose && !eose.hasOpenCC && hnc.find(e => e.sym === 'EOSE')) {
   console.log('PASS: EOSE not in portfolio (check N/A)');
 }
 
-// Check 7: Closed trade count is reasonable
+// Check 7: Closed trade count is reasonable (skip if no perf summary)
 if (closed.length === 0 && oPerf.length > 0) {
   bugs++; console.log('FAIL: 0 closed trades but ' + oPerf.length + ' in performance summary');
 } else {
