@@ -6,6 +6,7 @@
  *   node run.js              # One-shot: generate CSV from current positions (requires Gateway)
  *   node run.js --push       # Flex Query: fetch → convert → QA → push to GitHub
  *   node run.js --live       # Gateway: generate CSV → push to GitHub, loop every 5 min
+ *   node run.js --code "description"  # Code push: QA → changelog → tag → push modified files
  *   node run.js --monitor    # Generate CSV + start live price monitoring (requires Gateway)
  *   node run.js --spike      # Quick auth test (validates gateway connection)
  *
@@ -34,6 +35,7 @@ const MODES = {
   MONITOR: '--monitor',
   PUSH:    '--push',
   LIVE:    '--live',
+  CODE:    '--code',
 };
 
 // ── Flex Query Push Mode ──────────────────────────────────────
@@ -280,6 +282,51 @@ async function livePush() {
   console.log('Press Ctrl+C to stop.\n');
 }
 
+// ── Code Push Mode ────────────────────────────────────────────
+async function codePush() {
+  const sentinelDir = path.resolve(__dirname, '..');
+
+  // Collect description from args after --code
+  const args = process.argv.slice(3);
+  const description = args.join(' ').trim();
+  if (!description) {
+    console.error('❌ Usage: node run.js --code "description of what changed and why"');
+    process.exit(1);
+  }
+
+  // Auto-detect modified and untracked files (relative to sentinel root)
+  console.log('\n═══ CODE PUSH ═══');
+  let statusOutput;
+  try {
+    statusOutput = execSync('git status --porcelain', { cwd: sentinelDir, encoding: 'utf-8' });
+  } catch (err) {
+    console.error('❌ git status failed:', err.message);
+    process.exit(1);
+  }
+
+  const files = statusOutput
+    .split('\n')
+    .filter(l => l.trim())
+    .map(l => l.slice(3).trim())       // strip status prefix (e.g. " M ", "?? ")
+    .filter(f => f !== 'latest.csv' && f !== 'CHANGELOG.md' && f !== 'run.log'); // managed by wrapper
+
+  if (files.length === 0) {
+    console.log('No modified files to push.');
+    process.exit(0);
+  }
+
+  console.log(`  Files: ${files.join(', ')}`);
+  console.log(`  Description: ${description}`);
+
+  const { pushWithQA } = require('./push-wrapper');
+  const result = await pushWithQA({ mode: 'code', files, description });
+  if (!result.success) process.exit(1);
+
+  console.log('══════════════════════════════════════════════');
+  console.log('✅ CODE PUSH COMPLETE');
+  console.log('══════════════════════════════════════════════\n');
+}
+
 async function main() {
   const mode = process.argv[2] || MODES.CSV;
 
@@ -291,6 +338,11 @@ async function main() {
   // --live uses Gateway + loops every 5 min
   if (mode === MODES.LIVE) {
     return livePush();
+  }
+
+  // --code pushes code/config changes through the wrapper
+  if (mode === MODES.CODE) {
+    return codePush();
   }
 
   // All other modes require Gateway

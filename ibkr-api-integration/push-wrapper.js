@@ -16,6 +16,7 @@
  * Usage:
  *   const { pushWithQA } = require('./push-wrapper');
  *   await pushWithQA({ mode: 'flex' | 'live', errors: [] });
+ *   await pushWithQA({ mode: 'code', files: ['wheel-dashboard.html'], description: 'Fix qty filter' });
  */
 
 const fs = require('fs');
@@ -53,11 +54,13 @@ function extractMetrics(qaOutput) {
 
 /**
  * @param {Object} opts
- * @param {string} opts.mode - 'flex' or 'live'
+ * @param {string} opts.mode - 'flex', 'live', or 'code'
  * @param {string[]} [opts.errors] - any errors from earlier steps
+ * @param {string[]} [opts.files] - files to stage (code mode only; data modes stage latest.csv)
+ * @param {string} [opts.description] - what changed and why (code mode only)
  * @returns {{ success: boolean, tag: string }} - whether push succeeded and the version tag
  */
-async function pushWithQA({ mode, errors = [] }) {
+async function pushWithQA({ mode, errors = [], files = [], description = '' }) {
   const ts = timestamp();
   const tag = versionTag();
 
@@ -92,19 +95,32 @@ async function pushWithQA({ mode, errors = [] }) {
 
   // ── Step 3: Append to CHANGELOG.md ──────────────────────────
   console.log('  3. Updating CHANGELOG.md...');
-  const errSummary = errors.length > 0 ? `\n- Errors: ${errors.join('; ')}` : '';
-  const entry = [
-    `## ${tag}`,
-    `- **Timestamp:** ${ts}`,
-    `- **Mode:** ${mode}`,
-    `- **QA:** PASS`,
-    `- **NAV:** $${metrics.nav}`,
-    `- **Positions:** ${metrics.positions}`,
-    `- **Closed Trades:** ${metrics.trades}`,
-    `- **Realized P&L:** $${metrics.realPL}`,
-    errSummary ? `- **Errors:** ${errors.join('; ')}` : null,
-    '',
-  ].filter(l => l !== null).join('\n');
+  let entry;
+  if (mode === 'code') {
+    entry = [
+      `## ${tag}`,
+      `- **Timestamp:** ${ts}`,
+      `- **Mode:** code`,
+      `- **QA:** PASS`,
+      `- **Description:** ${description}`,
+      `- **Files:** ${files.join(', ')}`,
+      '',
+    ].join('\n');
+  } else {
+    const errSummary = errors.length > 0 ? `\n- Errors: ${errors.join('; ')}` : '';
+    entry = [
+      `## ${tag}`,
+      `- **Timestamp:** ${ts}`,
+      `- **Mode:** ${mode}`,
+      `- **QA:** PASS`,
+      `- **NAV:** $${metrics.nav}`,
+      `- **Positions:** ${metrics.positions}`,
+      `- **Closed Trades:** ${metrics.trades}`,
+      `- **Realized P&L:** $${metrics.realPL}`,
+      errSummary ? `- **Errors:** ${errors.join('; ')}` : null,
+      '',
+    ].filter(l => l !== null).join('\n');
+  }
 
   // Create or prepend to CHANGELOG.md
   if (fs.existsSync(CHANGELOG)) {
@@ -124,9 +140,16 @@ async function pushWithQA({ mode, errors = [] }) {
 
   // ── Step 4: Git commit ──────────────────────────────────────
   console.log('  4. Committing...');
-  const commitMsg = `${tag} [${mode}] NAV=$${metrics.nav} pos=${metrics.positions} trades=${metrics.trades}`;
+  let commitMsg, addFiles;
+  if (mode === 'code') {
+    commitMsg = `${tag} [code] ${description}`;
+    addFiles = files.concat(['CHANGELOG.md']).map(f => `"${f}"`).join(' ');
+  } else {
+    commitMsg = `${tag} [${mode}] NAV=$${metrics.nav} pos=${metrics.positions} trades=${metrics.trades}`;
+    addFiles = 'latest.csv CHANGELOG.md';
+  }
   try {
-    execSync('git add latest.csv CHANGELOG.md', { cwd: SENTINEL_DIR, stdio: 'pipe' });
+    execSync(`git add ${addFiles}`, { cwd: SENTINEL_DIR, stdio: 'pipe' });
     execSync(`git commit -m "${commitMsg}"`, { cwd: SENTINEL_DIR, stdio: 'pipe' });
   } catch (err) {
     if (err.stderr && err.stderr.toString().includes('nothing to commit')) {
@@ -160,7 +183,11 @@ async function pushWithQA({ mode, errors = [] }) {
   }
 
   // ── Step 7: Log success ─────────────────────────────────────
-  appendLog(`[${ts}] ${tag} ${mode} OK — NAV=$${metrics.nav} pos=${metrics.positions} trades=${metrics.trades}`);
+  if (mode === 'code') {
+    appendLog(`[${ts}] ${tag} code OK — ${description}`);
+  } else {
+    appendLog(`[${ts}] ${tag} ${mode} OK — NAV=$${metrics.nav} pos=${metrics.positions} trades=${metrics.trades}`);
+  }
   console.log(`✅ ${tag} pushed successfully`);
   console.log(`═══════════════════════════════════════════════\n`);
 
