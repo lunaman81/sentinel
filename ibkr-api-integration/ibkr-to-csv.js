@@ -165,15 +165,17 @@ class CSVGenerator {
     // Use avgPrice (per-share), NOT avgCost (per-contract = avgPrice * 100)
     const costPerShare = Math.abs(p.avgPrice);
 
+    // Prefer position.mktPrice (broker mark) over snapshot for options —
+    // /md/snapshot returns stale/delayed quotes for illiquid options
+    const closePrice = p.mktPrice || livePrice || 0;
+
     return {
       symbol,
       qty: p.position,                         // negative for short
       costPrice: costPerShare,                  // per-share cost (always positive)
       costBasis: this._roundCost(costPerShare * p.position * mult),  // negative for short (matches IBKR CSV)
-      closePrice: livePrice || p.mktPrice || 0,
-      value: livePrice
-        ? this._round(livePrice * p.position * mult)
-        : (p.mktValue || 0),
+      closePrice,
+      value: p.mktValue || (closePrice ? this._round(closePrice * p.position * mult) : 0),
       unrealizedPL: p.unrealizedPnl || 0,
     };
   }

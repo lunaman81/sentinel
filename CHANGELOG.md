@@ -1,6 +1,14 @@
 # Sentinel Changelog
 
 ## v2026-03-05-0954
+- **Timestamp:** 2026-03-05 17:54:25
+- **Mode:** code
+- **QA:** PASS
+- **Description:** fix P1: switch option prices to position.mktPrice
+- **Files:** ibkr-api-integration/ibkr-to-csv.js
+
+
+## v2026-03-05-0954
 - **Timestamp:** 2026-03-05 17:54:03
 - **Mode:** live
 - **QA:** PASS
