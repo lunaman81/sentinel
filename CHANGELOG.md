@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-05-0946
+- **Timestamp:** 2026-03-05 17:46:14
+- **Mode:** code
+- **QA:** PASS
+- **Description:** consolidate docs: merge architecture.md into CLAUDE.md
+- **Files:** CLAUDE.md
+
+
 ## v2026-03-05-0944
 - **Timestamp:** 2026-03-05 17:44:03
 - **Mode:** live

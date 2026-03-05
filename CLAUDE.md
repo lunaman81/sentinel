@@ -39,6 +39,24 @@ At the start of every session, before touching any code:
 2. Read `run.log` — check last push status, any failures
 3. Summarize current state before proceeding
 
+## Gateway
+
+- IBKR Client Portal Gateway at `~/Downloads/clientportal.gw`, port 5001, requires Java 21
+- Start: `export PATH="/opt/homebrew/opt/openjdk@21/bin:$PATH" && bin/run.sh root/conf.yaml`
+- Auth: open browser at https://localhost:5001, then `curl -k https://localhost:5001/v1/api/tickle`
+- Sessions expire — `livePush()` runs keepalive every 55s
+
+## Flex Query
+
+- Config: `~/.sentinel-flex-config.json` (token + queryId)
+- Query ID: 1422786, managed in IBKR Account Management
+
+## Data Pipeline
+
+- **Flex path** (`--push`): flex-fetch.js → flex-to-activity.js → latest.csv
+- **Live path** (`--live`): reads existing latest.csv, replaces Open Positions + NAV with Gateway data, preserves Performance Summary/Trades/Deposits from Flex
+- **CSV sections:** Statement, Net Asset Value, Change in NAV, Open Positions, Trades, Realized & Unrealized Performance Summary, Deposits & Withdrawals
+
 ## Notes
 
 - AMD is on the Tier 3 blacklist (`BL` array in wheel-dashboard.html) but currently has an open stock position from assignment. Do not remove it from the blacklist — the position is being managed down.
