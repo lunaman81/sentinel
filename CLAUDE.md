@@ -59,11 +59,14 @@ At the start of every session, before touching any code:
 
 ## Scheduled Jobs
 
-- **Daily Flex pull**: `0 18 * * 1-5` — runs `node run.js --push` at 6pm ET, weekdays only
+- **Daily Flex pull**: launchd agent runs `node run.js --push` at 6pm ET, weekdays only
+  - Plist: `~/Library/LaunchAgents/com.sentinel.daily-push.plist`
   - Fetches latest Flex Query data (trades, performance summary, deposits) and pushes to GitHub
   - Output appended to `~/sentinel/run.log`
-  - Installed via `crontab -e` on local machine — requires machine to be awake and network available
+  - Uses `StartCalendarInterval` — if Mac is asleep at 6pm, runs on next wake
   - Does NOT require Gateway (Flex API is independent)
+  - Manage: `launchctl load|unload ~/Library/LaunchAgents/com.sentinel.daily-push.plist`
+  - Check status: `launchctl list | grep sentinel`
 
 ## Notes
 

@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-05-1040
+- **Timestamp:** 2026-03-05 18:40:25
+- **Mode:** code
+- **QA:** PASS
+- **Description:** replace cron with launchd for daily Flex push
+- **Files:** CLAUDE.md
+
+
 ## v2026-03-05-1039
 - **Timestamp:** 2026-03-05 18:39:03
 - **Mode:** live
