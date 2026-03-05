@@ -2,17 +2,17 @@ Statement,Header,Field Name,Field Value
 Statement,Data,BrokerName,Interactive Brokers LLC
 Statement,Data,Title,Activity Statement
 Statement,Data,Period,"December 31, 2025 - March 3, 2026"
-Statement,Data,WhenGenerated,2026-03-05, 17:29:03.3 EST
+Statement,Data,WhenGenerated,2026-03-05, 17:34:03.2 EST
 Account Information,Header,Field Name,Field Value
 Account Information,Data,Name,Gabriel Luna-Ostaseski
 Account Information,Data,Account,U12781141
 Account Information,Data,Base Currency,USD
 Net Asset Value,Header,Asset Class,Prior Total,Current Long,Current Short,Current Total,Change
 Net Asset Value,Data,Cash ,1239381.2501594,2027952,0,2027952,788570.7498406
-Net Asset Value,Data,Stock,1074766.79,287602.06,0,287602.06,-787164.73
+Net Asset Value,Data,Stock,1074766.79,284594.88,0,284594.88,-790171.91
 Net Asset Value,Data,Options,-11343.62,0,0,0,11343.62
 Net Asset Value,Data,Interest Accruals,3018.99,0,0,0,-3018.99
-Net Asset Value,Data,Total,2305823.4101594,2315554.06,0,2296524.5,-9298.910159400199
+Net Asset Value,Data,Total,2305823.4101594,2312546.88,0,2289421.5,-16401.9101594002
 Net Asset Value,Header,Time Weighted Rate of Return
 Net Asset Value,Data,9.211029406%
 Change in Combined NAV,Header,Field Name,Field Value
@@ -26,19 +26,19 @@ Change in NAV,Data,Change in Interest Accruals,1946.34
 Change in NAV,Data,Commissions,-2917.25594
 Change in NAV,Data,Ending Value,2272988.8342194
 Open Positions,Header,DataDiscriminator,Asset Category,Currency,Symbol,Quantity,Mult,Cost Price,Cost Basis,Close Price,Value,Unrealized P/L,Code
-Open Positions,Data,Summary,Stocks,USD,EOSE,7500,1,14.08925105,105669.38288,6.47,48525,-57144.38,
-Open Positions,Data,Summary,Stocks,USD,IBKR,19.6204,1,75.450001,1480.3592,67.66,1327.52,-152.84,
-Open Positions,Data,Summary,Stocks,USD,IREN,6000,1,42.4505041,254703.0246,40.18,241080,-13623.02,
+Open Positions,Data,Summary,Stocks,USD,EOSE,7500,1,14.08925105,105669.38288,6.41,48075,-57594.38,
+Open Positions,Data,Summary,Stocks,USD,IBKR,19.6204,1,75.450001,1480.3592,67.54,1325.16,-155.2,
+Open Positions,Data,Summary,Stocks,USD,IREN,6000,1,42.4505041,254703.0246,39.9,239400,-15303.02,
 Open Positions,Data,Summary,Equity and Index Options,USD,MRNA 06MAR26 45.5 P,0,100,0,0,0.02,0,0,
-Open Positions,Data,Summary,Equity and Index Options,USD,GLW 06MAR26 138 P,-10,100,2.0529796,-2052.9796,3.32,-3320,-2312.21,
-Open Positions,Data,Summary,Equity and Index Options,USD,NCLH 06MAR26 21 P,-50,100,0.1764796,-882.398,0.46,-2300,-1308.64,
-Open Positions,Data,Summary,Equity and Index Options,USD,LRCX 06MAR26 215 P,-13,100,2.6854796,-3491.12348,4.68,-6084,-2718.43,
-Open Positions,Data,Summary,Equity and Index Options,USD,MU 06MAR26 372.5 P,-8,100,4.9929796,-3994.38368,2.1,-1680,2066.19,
-Open Positions,Data,Summary,Equity and Index Options,USD,INTC 06MAR26 42 P,0,100,0,0,0.04,0,0,
-Open Positions,Data,Summary,Equity and Index Options,USD,WDC 06MAR26 247.5 P,-12,100,2.2629796,-2715.57552,1.99,-2388,82.38,
-Open Positions,Data,Summary,Equity and Index Options,USD,AMAT 06MAR26 335 P,-6,100,1.35548765,-813.29259,1.78,-1068,-477.89,
-Open Positions,Data,Summary,Equity and Index Options,USD,IREN 06MAR26 44 C,-60,100,1.0129876,-6077.9256,0.11,-660,5413.81,
-Open Positions,Data,Summary,Equity and Index Options,USD,AMD 06MAR26 190 P,-10,100,1.3057876,-1305.7876,0.6,-600,805.79,
+Open Positions,Data,Summary,Equity and Index Options,USD,GLW 06MAR26 138 P,-10,100,2.0529796,-2052.9796,3.32,-3320,-3101.87,
+Open Positions,Data,Summary,Equity and Index Options,USD,NCLH 06MAR26 21 P,-50,100,0.1764796,-882.398,0.46,-2300,-1608.78,
+Open Positions,Data,Summary,Equity and Index Options,USD,LRCX 06MAR26 215 P,-13,100,2.6854796,-3491.12348,5.6,-7280,-3797.24,
+Open Positions,Data,Summary,Equity and Index Options,USD,MU 06MAR26 372.5 P,-8,100,4.9929796,-3994.38368,3.2,-2560,1514.38,
+Open Positions,Data,Summary,Equity and Index Options,USD,INTC 06MAR26 42 P,0,100,0,0,0.06,0,0,
+Open Positions,Data,Summary,Equity and Index Options,USD,WDC 06MAR26 247.5 P,-12,100,2.2629796,-2715.57552,1.99,-2388,-429.13,
+Open Positions,Data,Summary,Equity and Index Options,USD,AMAT 06MAR26 335 P,-6,100,1.35548765,-813.29259,1.78,-1068,-883.31,
+Open Positions,Data,Summary,Equity and Index Options,USD,IREN 06MAR26 44 C,-60,100,1.0129876,-6077.9256,0.1,-600,5519.02,
+Open Positions,Data,Summary,Equity and Index Options,USD,AMD 06MAR26 190 P,-10,100,1.3057876,-1305.7876,0.89,-890,465.79,
 Trades,Header,DataDiscriminator,Asset Category,Currency,Account,Symbol,Date/Time,Quantity,T. Price,C. Price,Proceeds,Comm/Fee,Basis,Realized P/L,MTM P/L,Code
 Trades,Data,Order,Stocks,USD,U12781141,AMD,"2026-01-09, 16:20:00",500,210,203.17,-105000,0,105000,0,-3415,A
 Trades,Data,Order,Stocks,USD,U12781141,AMD,"2026-01-09, 16:20:00",500,215,203.17,-107500,0,107500,0,-5915,A
