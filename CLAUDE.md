@@ -57,6 +57,14 @@ At the start of every session, before touching any code:
 - **Live path** (`--live`): reads existing latest.csv, replaces Open Positions + NAV with Gateway data, preserves Performance Summary/Trades/Deposits from Flex
 - **CSV sections:** Statement, Net Asset Value, Change in NAV, Open Positions, Trades, Realized & Unrealized Performance Summary, Deposits & Withdrawals
 
+## Scheduled Jobs
+
+- **Daily Flex pull**: `0 18 * * 1-5` — runs `node run.js --push` at 6pm ET, weekdays only
+  - Fetches latest Flex Query data (trades, performance summary, deposits) and pushes to GitHub
+  - Output appended to `~/sentinel/run.log`
+  - Installed via `crontab -e` on local machine — requires machine to be awake and network available
+  - Does NOT require Gateway (Flex API is independent)
+
 ## Notes
 
 - AMD is on the Tier 3 blacklist (`BL` array in wheel-dashboard.html) but currently has an open stock position from assignment. Do not remove it from the blacklist — the position is being managed down.

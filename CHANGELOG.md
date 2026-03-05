@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-05-1037
+- **Timestamp:** 2026-03-05 18:37:17
+- **Mode:** code
+- **QA:** PASS
+- **Description:** fix P2: schedule daily Flex push at 6pm ET
+- **Files:** CLAUDE.md
+
+
 ## v2026-03-05-1034
 - **Timestamp:** 2026-03-05 18:34:03
 - **Mode:** live
