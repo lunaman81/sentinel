@@ -1,5 +1,13 @@
 # Sentinel Changelog
 
+## v2026-03-05-0937
+- **Timestamp:** 2026-03-05 17:37:06
+- **Mode:** code
+- **QA:** PASS
+- **Description:** QA audit report: compare dashboard vs live IBKR Gateway data, identify 3 prioritized fixes
+- **Files:** QA-REPORT-2026-03-05.md
+
+
 ## v2026-03-05-0934
 - **Timestamp:** 2026-03-05 17:34:03
 - **Mode:** live
