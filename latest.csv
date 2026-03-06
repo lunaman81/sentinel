@@ -1,44 +1,46 @@
 Statement,Header,Field Name,Field Value
 Statement,Data,BrokerName,Interactive Brokers LLC
 Statement,Data,Title,Activity Statement
-Statement,Data,Period,"December 31, 2025 - March 3, 2026"
-Statement,Data,WhenGenerated,2026-03-05, 20:09:03.3 EST
+Statement,Data,Period,"December 31, 2025 - March 4, 2026"
+Statement,Data,WhenGenerated,"2026-03-06, 02:00:23.0 EST"
 Account Information,Header,Field Name,Field Value
 Account Information,Data,Name,Gabriel Luna-Ostaseski
 Account Information,Data,Account,U12781141
 Account Information,Data,Base Currency,USD
 Net Asset Value,Header,Asset Class,Prior Total,Current Long,Current Short,Current Total,Change
-Net Asset Value,Data,Cash ,1239381.2501594,2027952,0,2027952,788570.7498406
-Net Asset Value,Data,Stock,1074766.79,288583.1,0,288583.1,-786183.6900000001
-Net Asset Value,Data,Options,-11343.62,0,0,0,11343.62
-Net Asset Value,Data,Interest Accruals,3018.99,0,0,0,-3018.99
-Net Asset Value,Data,Total,2305823.4101594,2316535.1,0,2293312,-12511.410159400199
+Net Asset Value,Data,Cash ,1239381.2501594,2028291.1968794,0,2028291.1968794,788909.9467199999
+Net Asset Value,Data,Collateral Value,0,3773,0,3773,3773
+Net Asset Value,Data,Stock,1074766.79,315021.75,0,315021.75,-759745.04
+Net Asset Value,Data,Securities Lent,0,0,-3773,-3773,-3773
+Net Asset Value,Data,Options,-11343.62,0,-22347.68,-22347.68,-11004.06
+Net Asset Value,Data,Interest Accruals,3018.99,527.7,0,527.7,-2491.29
+Net Asset Value,Data,Dividend Accruals,0,1.57,0,1.57,1.57
+Net Asset Value,Data,Total,2305823.4101594,2347615.2168794,-26120.68,2321494.5368794,15671.126719999593
 Net Asset Value,Header,Time Weighted Rate of Return
-Net Asset Value,Data,9.211029406%
+Net Asset Value,Data,11.541598584%
 Change in Combined NAV,Header,Field Name,Field Value
 Change in NAV,Data,Starting Value,2305823.4101594
-Change in NAV,Data,Mark-to-Market,225511.19
+Change in NAV,Data,Mark-to-Market,273863.2
 Change in NAV,Data,Deposits & Withdrawals,358960
 Change in NAV,Data,Position Transfers,-623181
 Change in NAV,Data,Change in Dividend Accruals,1.57
-Change in NAV,Data,Interest,6844.58
-Change in NAV,Data,Change in Interest Accruals,1946.34
-Change in NAV,Data,Commissions,-2917.25594
-Change in NAV,Data,Ending Value,2272988.8342194
+Change in NAV,Data,Interest,11457.72
+Change in NAV,Data,Change in Interest Accruals,-2491.29
+Change in NAV,Data,Commissions,-2939.07328
+Change in NAV,Data,Ending Value,2321494.5368794
 Open Positions,Header,DataDiscriminator,Asset Category,Currency,Symbol,Quantity,Mult,Cost Price,Cost Basis,Close Price,Value,Unrealized P/L,Code
-Open Positions,Data,Summary,Stocks,USD,EOSE,7500,1,14.08925105,105669.38288,6.62,49650,-56019.38,
-Open Positions,Data,Summary,Stocks,USD,IBKR,19.6204,1,75.450001,1480.3592,67.22,1318.88,-161.48,
-Open Positions,Data,Summary,Stocks,USD,IREN,6000,1,42.4505041,254703.0246,39.76,238560,-16143.02,
-Open Positions,Data,Summary,Equity and Index Options,USD,MRNA 06MAR26 45.5 P,0,100,0,0,0.02,0,0,
-Open Positions,Data,Summary,Equity and Index Options,USD,GLW 06MAR26 138 P,-10,100,2.0529796,-2052.9796,6.08,-6080,-4494.41,
-Open Positions,Data,Summary,Equity and Index Options,USD,NCLH 06MAR26 21 P,-50,100,0.1764796,-882.398,0.58,-2900,-2056.9,
-Open Positions,Data,Summary,Equity and Index Options,USD,LRCX 06MAR26 215 P,-13,100,2.6854796,-3491.12348,5.76,-7488,-3620.12,
-Open Positions,Data,Summary,Equity and Index Options,USD,MU 06MAR26 372.5 P,-8,100,4.9929796,-3994.38368,2.36,-1888,1743.73,
-Open Positions,Data,Summary,Equity and Index Options,USD,INTC 06MAR26 42 P,0,100,0,0,0.05,0,0,
-Open Positions,Data,Summary,Equity and Index Options,USD,WDC 06MAR26 247.5 P,-12,100,2.2629796,-2715.57552,2.61,-3132,-561.56,
-Open Positions,Data,Summary,Equity and Index Options,USD,AMAT 06MAR26 335 P,-6,100,1.35548765,-813.29259,4.26,-2556,-961.12,
-Open Positions,Data,Summary,Equity and Index Options,USD,IREN 06MAR26 44 C,-60,100,1.0129876,-6077.9256,0.08,-480,5597.93,
-Open Positions,Data,Summary,Equity and Index Options,USD,AMD 06MAR26 190 P,-10,100,1.3057876,-1305.7876,0.83,-830,435.79,
+Open Positions,Data,Summary,Stocks,USD,EOSE,7500,1,14.089251067,105669.383,6.75,50625,-55044.383,
+Open Positions,Data,Summary,Stocks,USD,IBKR,19.6204,1,75.450001019,1480.3592,69.15,1356.75,-123.6092,
+Open Positions,Data,Summary,Stocks,USD,IREN,6000,1,42.450504117,254703.0247,43.84,263040,8336.9753,
+Open Positions,Data,Summary,Equity and Index Options,USD,AMAT 06MAR26 335 P,-6,100,1.3554876,-813.29256,1.4052,-843.12,-29.82744,
+Open Positions,Data,Summary,Equity and Index Options,USD,AMD 06MAR26 190 P,-10,100,1.3057876,-1305.7876,0.865,-865,440.7876,
+Open Positions,Data,Summary,Equity and Index Options,USD,GLW 06MAR26 138 P,-10,100,2.0529796,-2052.9796,1.197,-1197,855.9796,
+Open Positions,Data,Summary,Equity and Index Options,USD,INTC 06MAR26 42 P,-48,100,0.5554796,-2666.30208,0.11,-528,2138.30208,
+Open Positions,Data,Summary,Equity and Index Options,USD,IREN 06MAR26 44 C,-60,100,1.0129876,-6077.9256,1.4287,-8572.2,-2494.2744,
+Open Positions,Data,Summary,Equity and Index Options,USD,LRCX 06MAR26 215 P,-13,100,2.6854796,-3491.12348,2.3716,-3083.08,408.04348,
+Open Positions,Data,Summary,Equity and Index Options,USD,MU 06MAR26 372.5 P,-8,100,4.9929796,-3994.38368,2.5,-2000,1994.38368,
+Open Positions,Data,Summary,Equity and Index Options,USD,NCLH 06MAR26 21 P,-50,100,0.1764796,-882.398,0.32,-1600,-717.602,
+Open Positions,Data,Summary,Equity and Index Options,USD,WDC 06MAR26 247.5 P,-12,100,2.2629796,-2715.57552,3.0494,-3659.28,-943.70448,
 Trades,Header,DataDiscriminator,Asset Category,Currency,Account,Symbol,Date/Time,Quantity,T. Price,C. Price,Proceeds,Comm/Fee,Basis,Realized P/L,MTM P/L,Code
 Trades,Data,Order,Stocks,USD,U12781141,AMD,"2026-01-09, 16:20:00",500,210,203.17,-105000,0,105000,0,-3415,A
 Trades,Data,Order,Stocks,USD,U12781141,AMD,"2026-01-09, 16:20:00",500,215,203.17,-107500,0,107500,0,-5915,A
@@ -64,6 +66,7 @@ Trades,Data,Order,Stocks,USD,U12781141,TSLA,"2026-01-02, 16:20:00",500,455,438.0
 Trades,Data,Order,Stocks,USD,U12781141,TSLA,"2026-01-23, 16:20:00",-500,442.5,449.06,221250,-0.0975,-225628.33445,-3520.54215,-3280,A
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMAT 20FEB26 337.5 P,"2026-02-13, 11:40:36",-5,3.66,3.9682,1830,-3.5102,-1826.4898,0,-154.1,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMAT 20FEB26 337.5 P,"2026-02-18, 11:03:51",5,0.38,0.3887,-190,-3.49375,1826.4898,1632.99605,4.35,
+Trades,Data,Order,Equity and Index Options,USD,U12781141,AMAT 06MAR26 335 P,"2026-03-04, 11:04:54",-6,1.36,1.4052,816,-2.70744,-813.29256,0,-27.12,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 02JAN26 207.5 P,"2026-01-02, 10:34:59",5,0.02,0,-10,0.90625,691.66555,682.5718,-10,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 09JAN26 237.5 C,"2026-01-02, 11:02:27",-9,1.13,1.5,1017,-2.53836,-1014.46164,0,-333,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 09JAN26 237.5 C,"2026-01-07, 10:42:43",9,0.04,0.0307,-36,1.63125,1014.46164,980.09289,-8.37,
@@ -90,6 +93,7 @@ Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 27FEB26 192.5 P,"20
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 27FEB26 192.5 P,"2026-02-20, 11:13:10",-2,2.29,3.225,458,-1.40908,-456.59092,0,-187,;P
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 27FEB26 192.5 P,"2026-02-20, 11:13:10",-3,2.29,3.225,687,-2.11362,-684.88638,0,-280.5,;P
 Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 27FEB26 192.5 P,"2026-02-26, 13:18:31",8,0.37,0.155,-296,-5.11,1826.36368,1525.25368,-172,
+Trades,Data,Order,Equity and Index Options,USD,U12781141,AMD 06MAR26 190 P,"2026-03-04, 10:59:17",-10,1.31,0.865,1310,-4.2124,-1305.7876,0,445,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,APA 27FEB26 26 P,"2026-02-25, 12:17:09",-50,0.17,0.1714,850,-35.102,-814.898,0,-7,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,APA 27FEB26 26 P,"2026-02-26, 13:21:05",7,0.04,0.0004,-28,-2.09125,114.08572,83.99447,-27.72,;P
 Trades,Data,Order,Equity and Index Options,USD,U12781141,APA 27FEB26 26 P,"2026-02-26, 13:21:05",20,0.04,0.0004,-80,-5.975,325.9592,239.9842,-79.2,;P
@@ -287,6 +291,7 @@ Trades,Data,Order,Equity and Index Options,USD,U12781141,MRNA 27FEB26 44.5 P,"20
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MRNA 27FEB26 44.5 P,"2026-02-25, 11:39:22",16,0.07,0.0883,-112,-8.78,596.76736,475.98736,29.28,;P
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MRNA 27FEB26 44.5 P,"2026-02-25, 11:39:22",24,0.07,0.0883,-168,-13.17,895.15104,713.98104,43.92,;P
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MRNA 06MAR26 45.5 P,"2026-02-27, 11:09:34",-50,0.26,0.2201,1300,-35.102,-1264.898,0,199.5,
+Trades,Data,Order,Equity and Index Options,USD,U12781141,MRNA 06MAR26 45.5 P,"2026-03-04, 10:56:04",50,0.09,0.0526,-450,-14.8975,1264.898,800.0005,-187,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MSTR 02JAN26 162.5 C,"2026-01-02, 10:39:19",9,0.17,0,-153,-4.03875,2423.99799,2266.95924,-153,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MSTR 09JAN26 165 C,"2026-01-02, 10:48:25",-6,2.74,2.4,1644,-2.71224,-1641.28776,0,204,
 Trades,Data,Order,Equity and Index Options,USD,U12781141,MSTR 09JAN26 165 C,"2026-01-08, 10:44:13",6,2.2,3.7945,-1320,-4.1925,1641.28776,317.09526,956.7,
@@ -466,16 +471,17 @@ Trades,Data,Order,Equity and Index Options,USD,U12781141,WDC 06MAR26 247.5 P,"20
 Realized & Unrealized Performance Summary,Header,Asset Category,Symbol,Cost Adj.,Realized S/T Profit,Realized S/T Loss,Realized L/T Profit,Realized L/T Loss,Realized Total,Unrealized S/T Profit,Unrealized S/T Loss,Unrealized L/T Profit,Unrealized L/T Loss,Unrealized Total,Total,Code
 Realized & Unrealized Performance Summary,Data,Stocks,AMD,0,35825.30773,0,0,0,35825.30773,0,0,0,0,0,35825.30773,
 Realized & Unrealized Performance Summary,Data,Stocks,ENPH,0,3805.21532,0,0,0,3805.21532,0,0,0,0,0,3805.21532,
-Realized & Unrealized Performance Summary,Data,Stocks,EOSE,0,0,0,0,0,0,0,-60219.383,0,0,-60219.383,-60219.383,
-Realized & Unrealized Performance Summary,Data,Stocks,IBKR,0,0,0,0,0,0,0,-118.6992,0,0,-118.6992,-118.6992,
-Realized & Unrealized Performance Summary,Data,Stocks,IREN,0,16640.6314,0,0,0,16640.6314,0,-21603.0247,0,0,-21603.0247,-4962.3933,
+Realized & Unrealized Performance Summary,Data,Stocks,EOSE,0,0,0,0,0,0,0,-55044.383,0,0,-55044.383,-55044.383,
+Realized & Unrealized Performance Summary,Data,Stocks,IBKR,0,0,0,0,0,0,0,-123.6092,0,0,-123.6092,-123.6092,
+Realized & Unrealized Performance Summary,Data,Stocks,IREN,0,16640.6314,0,0,0,16640.6314,14528.9388,-6191.9635,0,0,8336.9753,24977.6067,
 Realized & Unrealized Performance Summary,Data,Stocks,MRNA,0,4298.28124,0,0,0,4298.28124,0,0,0,0,0,4298.28124,
 Realized & Unrealized Performance Summary,Data,Stocks,MSTR,0,0,0,0,0,0,0,0,0,0,0,0,
 Realized & Unrealized Performance Summary,Data,Stocks,RIOT,0,4774.7862,-18028.93794,0,0,-13254.15174,0,0,0,0,0,-13254.15174,
 Realized & Unrealized Performance Summary,Data,Stocks,RIVN,0,8761.9815,-25334.13225,0,0,-16572.15075,0,0,0,0,0,-16572.15075,
 Realized & Unrealized Performance Summary,Data,Stocks,TSLA,0,0,-3520.54215,0,0,-3520.54215,0,0,0,0,0,-3520.54215,
-Realized & Unrealized Performance Summary,Data,Total,,0,74106.20339,-46883.61234,0,0,27222.591049999995,0,-81941.10690000001,0,0,-81941.10690000001,-54718.515849999996,
+Realized & Unrealized Performance Summary,Data,Total,,0,74106.20339,-46883.61234,0,0,27222.591049999995,14528.9388,-61359.9557,0,0,-46831.0169,-19608.42585,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMAT 20FEB26 337.5 P,0,1632.99605,0,0,0,1632.99605,0,0,0,0,0,1632.99605,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMAT 06MAR26 335 P,0,0,0,0,0,0,0,-29.82744,0,0,-29.82744,-29.82744,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 02JAN26 207.5 P,0,682.5718,0,0,0,682.5718,0,0,0,0,0,682.5718,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 09JAN26 237.5 C,0,980.09289,0,0,0,980.09289,0,0,0,0,0,980.09289,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 23JAN26 220 P,0,1133.97447,0,0,0,1133.97447,0,0,0,0,0,1133.97447,
@@ -483,6 +489,7 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 30JA
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 13FEB26 205 P,0,1130.38368,0,0,0,1130.38368,0,0,0,0,0,1130.38368,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 20FEB26 192.5 P,0,892.79368,0,0,0,892.79368,0,0,0,0,0,892.79368,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 27FEB26 192.5 P,0,1525.25368,0,0,0,1525.25368,0,0,0,0,0,1525.25368,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,AMD 06MAR26 190 P,0,0,0,0,0,0,440.7876,0,0,0,440.7876,440.7876,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,APA 27FEB26 26 P,0,599.9605,0,0,0,599.9605,0,0,0,0,0,599.9605,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,DAL 16JAN26 65 P,0,3076.84208,0,0,0,3076.84208,0,0,0,0,0,3076.84208,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,DAL 23JAN26 66 P,0,1608.71445,0,0,0,1608.71445,0,0,0,0,0,1608.71445,
@@ -496,7 +503,7 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,EOSE 20F
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,ETSY 16JAN26 59 P,0,1036.4388,0,0,0,1036.4388,0,0,0,0,0,1036.4388,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,FCX 30JAN26 55 P,0,759.9684,0,0,0,759.9684,0,0,0,0,0,759.9684,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,FSLR 02JAN26 260 P,0,1222.27488,0,0,0,1222.27488,0,0,0,0,0,1222.27488,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,GLW 06MAR26 138 P,0,0,0,0,0,0,529.3796,0,0,0,529.3796,529.3796,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,GLW 06MAR26 138 P,0,0,0,0,0,0,855.9796,0,0,0,855.9796,855.9796,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,GOOG 30JAN26 317.5 P,0,913.08368,0,0,0,913.08368,0,0,0,0,0,913.08368,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,HIMS 16JAN26 30 P,0,1114.0284,0,0,0,1114.0284,0,0,0,0,0,1114.0284,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,ILMN 16JAN26 130 P,0,2360.93183,0,0,0,2360.93183,0,0,0,0,0,2360.93183,
@@ -508,7 +515,7 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 06F
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 06FEB26 47 P,0,1014.88485,0,0,0,1014.88485,0,0,0,0,0,1014.88485,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 13FEB26 45 P,0,1099.9605,0,0,0,1099.9605,0,0,0,0,0,1099.9605,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 27FEB26 43 P,0,819.1684,0,0,0,819.1684,0,0,0,0,0,819.1684,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 06MAR26 42 P,0,0,0,0,0,0,0,-549.69792,0,0,-549.69792,-549.69792,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,INTC 06MAR26 42 P,0,0,0,0,0,0,2138.30208,0,0,0,2138.30208,2138.30208,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 02JAN26 42.5 C,0,2583.3008,0,0,0,2583.3008,0,0,0,0,0,2583.3008,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 09JAN26 44 C,0,0,-3663.6237,0,0,-3663.6237,0,0,0,0,0,-3663.6237,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 16JAN26 48 P,0,1847.3388,0,0,0,1847.3388,0,0,0,0,0,1847.3388,
@@ -517,17 +524,17 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 13F
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 13FEB26 46 C,0,4942.4763,0,0,0,4942.4763,0,0,0,0,0,4942.4763,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 20FEB26 43.5 C,0,2498.3763,0,0,0,2498.3763,0,0,0,0,0,2498.3763,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 27FEB26 44 C,0,5480.9526,0,0,0,5480.9526,0,0,0,0,0,5480.9526,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 06MAR26 44 C,0,0,0,0,0,0,4663.1256,0,0,0,4663.1256,4663.1256,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,IREN 06MAR26 44 C,0,0,0,0,0,0,0,-2494.2744,0,0,-2494.2744,-2494.2744,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 06FEB26 225 P,0,3145.9921,0,0,0,3145.9921,0,0,0,0,0,3145.9921,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 13FEB26 212.5 P,0,1426.19052,0,0,0,1426.19052,0,0,0,0,0,1426.19052,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 20FEB26 215 P,0,1671.75723,0,0,0,1671.75723,0,0,0,0,0,1671.75723,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 27FEB26 207.5 P,0,1940.38894,0,0,0,1940.38894,0,0,0,0,0,1940.38894,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 06MAR26 215 P,0,0,0,0,0,0,0,-3723.87652,0,0,-3723.87652,-3723.87652,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,LRCX 06MAR26 215 P,0,0,0,0,0,0,408.04348,0,0,0,408.04348,408.04348,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 30JAN26 44 P,0,1741.27044,0,0,0,1741.27044,0,0,0,0,0,1741.27044,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 06FEB26 44 C,0,1402.62131,0,0,0,1402.62131,0,0,0,0,0,1402.62131,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 13FEB26 43 C,0,2844.55512,0,0,0,2844.55512,0,0,0,0,0,2844.55512,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 27FEB26 44.5 P,0,1189.9684,0,0,0,1189.9684,0,0,0,0,0,1189.9684,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 06MAR26 45.5 P,0,0,0,0,0,0,0,-424.102,0,0,-424.102,-424.102,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,MRNA 06MAR26 45.5 P,0,800.0005,0,0,0,800.0005,0,0,0,0,0,800.0005,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MSTR 02JAN26 162.5 C,0,2266.95924,0,0,0,2266.95924,0,0,0,0,0,2266.95924,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MSTR 09JAN26 165 C,0,317.09526,0,0,0,317.09526,0,0,0,0,0,317.09526,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MSTR 23JAN26 182.5 C,0,1323.59526,0,0,0,1323.59526,0,0,0,0,0,1323.59526,
@@ -538,8 +545,8 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 30JAN
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 06FEB26 382.5 P,0,3925.94447,0,0,0,3925.94447,0,0,0,0,0,3925.94447,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 13FEB26 347.5 P,0,1644.79368,0,0,0,1644.79368,0,0,0,0,0,1644.79368,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 27FEB26 365 P,0,2761.59368,0,0,0,2761.59368,0,0,0,0,0,2761.59368,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 06MAR26 372.5 P,0,0,0,0,0,0,0,-3172.09632,0,0,-3172.09632,-3172.09632,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,NCLH 06MAR26 21 P,0,0,0,0,0,0,0,-1292.602,0,0,-1292.602,-1292.602,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,MU 06MAR26 372.5 P,0,0,0,0,0,0,1994.38368,0,0,0,1994.38368,1994.38368,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,NCLH 06MAR26 21 P,0,0,0,0,0,0,0,-717.602,0,0,-717.602,-717.602,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,NEM 27FEB26 110 P,0,1538.97867,0,0,0,1538.97867,0,0,0,0,0,1538.97867,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,NVDA 09JAN26 180 P,0,790.19289,0,0,0,790.19289,0,0,0,0,0,790.19289,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,NVDA 23JAN26 172.5 P,0,1262.03815,0,0,0,1262.03815,0,0,0,0,0,1262.03815,
@@ -573,9 +580,9 @@ Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 23JA
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 06FEB26 230 P,0,2544.59526,0,0,0,2544.59526,0,0,0,0,0,2544.59526,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 13FEB26 255 P,0,1111.94447,0,0,0,1111.94447,0,0,0,0,0,1111.94447,
 Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 27FEB26 255 P,0,3805.9921,0,0,0,3805.9921,0,0,0,0,0,3805.9921,
-Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 06MAR26 247.5 P,0,0,0,0,0,0,0,-6798.14448,0,0,-6798.14448,-6798.14448,
-Realized & Unrealized Performance Summary,Data,Total,,0,156749.58032000007,-4547.27772,0,0,152202.30260000005,5192.5052000000005,-15960.519240000001,0,0,-10768.01404,141434.2885600001,
-Realized & Unrealized Performance Summary,Data,Total (All Assets),,0,230855.78370999996,-51430.890060000005,0,0,179424.89365000004,5192.5052000000005,-97901.62614000002,0,0,-92709.12094000002,86715.77271000006,
+Realized & Unrealized Performance Summary,Data,Equity and Index Options,WDC 06MAR26 247.5 P,0,0,0,0,0,0,0,-943.70448,0,0,-943.70448,-943.70448,
+Realized & Unrealized Performance Summary,Data,Total,,0,157549.58082000006,-4547.27772,0,0,153002.30310000005,5837.496439999999,-4185.40832,0,0,1652.08812,154654.39122000005,
+Realized & Unrealized Performance Summary,Data,Total (All Assets),,0,231655.78420999995,-51430.890060000005,0,0,180224.89415000004,20366.43524,-65545.36402,0,0,-45178.92878,135045.96537000008,
 Deposits & Withdrawals,Header,Currency,Account,Settle Date,Description,Amount
 Deposits & Withdrawals,Data,USD,U12781141,2026-02-03,Disbursement INITIATED BY Gabriel Luna-Ostaseski,-45000
 Deposits & Withdrawals,Data,USD,U12781141,2026-03-02,Disbursement INITIATED BY Gabriel Luna-Ostaseski,-30000
